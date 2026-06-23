@@ -7,13 +7,13 @@
   --font-heading: 'Outfit', sans-serif;
   --font-body: 'Plus Jakarta Sans', sans-serif;
 
-  --bg-main: #0b0f19;
-  --bg-sidebar: #111827;
-  --bg-card: #1f2937;
-  --bg-card-hover: #374151;
+  --bg-main: #000000;
+  --bg-sidebar: #050505;
+  --bg-card: #0d0d0f;
+  --bg-card-hover: #151518;
   --text-primary: #f3f4f6;
-  --text-secondary: #9ca3af;
-  --text-muted: #6b7280;
+  --text-secondary: #e5e7eb;
+  --text-muted: #9ca3af;
 
   --accent-primary: #6366f1; /* Indigo */
   --accent-primary-rgb: 99, 102, 241;
@@ -21,9 +21,9 @@
   --accent-secondary-rgb: 168, 85, 247;
   --accent-glow: rgba(99, 102, 241, 0.15);
 
-  --border-color: #374151;
-  --glass-bg: rgba(31, 41, 55, 0.4);
-  --glass-border: rgba(255, 255, 255, 0.05);
+  --border-color: #1e1e24;
+  --glass-bg: rgba(13, 13, 15, 0.6);
+  --glass-border: rgba(255, 255, 255, 0.06);
   --glass-blur: blur(12px);
 
   --color-success: #10b981;
@@ -450,6 +450,7 @@ body.logged-in .app-header {
 }
 
 .form-control {
+  width: 100%;
   background-color: var(--bg-main);
   border: 1px solid var(--border-color);
   color: var(--text-primary);
