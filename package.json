@@ -1,0 +1,13 @@
+{
+  "name": "skillswap",
+  "version": "1.0.0",
+  "description": "SkillSwap - A credit-based peer-to-peer skill-exchange platform",
+  "scripts": {
+    "dev": "vite --port 3000 --host",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "devDependencies": {
+    "vite": "^5.2.0"
+  }
+}

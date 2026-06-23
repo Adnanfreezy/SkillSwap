@@ -1,0 +1,1278 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SkillSwap - Peer-to-Peer Skill Exchange Platform</title>
+  <meta name="description" content="Exchange skills, teach, learn, and earn credits without spending money. A secure, credit-based exchange ecosystem.">
+  <link rel="stylesheet" href="./index.css">
+  <!-- Material Symbols Outlined for modern Google icons -->
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet" />
+</head>
+<body class="theme-dark">
+
+  <div class="app-container">
+
+    <!-- DESKTOP SIDEBAR -->
+    <aside class="sidebar" id="app-sidebar" style="display: none;">
+      <div class="logo-container">
+        <div class="logo-icon">S</div>
+        <div class="logo-text">SkillSwap</div>
+      </div>
+
+      <ul class="nav-menu">
+        <li class="nav-item active" data-screen="home">
+          <button id="nav-btn-home">
+            <span class="material-symbols-outlined nav-icon">dashboard</span>
+            Dashboard
+          </button>
+        </li>
+        <li class="nav-item" data-screen="search">
+          <button id="nav-btn-search">
+            <span class="material-symbols-outlined nav-icon">search</span>
+            Marketplace
+          </button>
+        </li>
+        <li class="nav-item" data-screen="chat">
+          <button id="nav-btn-chat">
+            <span class="material-symbols-outlined nav-icon">chat</span>
+            Chats
+          </button>
+        </li>
+        <li class="nav-item" data-screen="wallet">
+          <button id="nav-btn-wallet">
+            <span class="material-symbols-outlined nav-icon">account_balance_wallet</span>
+            Wallet
+          </button>
+        </li>
+        <li class="nav-item" data-screen="profile">
+          <button id="nav-btn-profile">
+            <span class="material-symbols-outlined nav-icon">person</span>
+            My Profile
+          </button>
+        </li>
+        <li class="nav-item" data-screen="settings">
+          <button id="nav-btn-settings">
+            <span class="material-symbols-outlined nav-icon">settings</span>
+            Settings
+          </button>
+        </li>
+        <!-- Admin Dashboard link, toggled dynamically -->
+        <li class="nav-item admin-only" data-screen="admin" style="display: none;">
+          <button id="nav-btn-admin" style="color: var(--accent-secondary);">
+            <span class="material-symbols-outlined nav-icon">admin_panel_settings</span>
+            Admin Portal
+          </button>
+        </li>
+      </ul>
+
+      <div class="sidebar-user" id="sidebar-user-card">
+        <img src="" alt="Avatar" class="user-avatar-sm" id="sidebar-avatar">
+        <div class="user-info-sm">
+          <div class="user-name-sm" id="sidebar-username">Guest</div>
+          <div class="user-credits-sm" id="sidebar-credits">0 Credits</div>
+        </div>
+        <button id="btn-logout-sidebar" title="Log Out" style="color: var(--text-muted); display: flex;">
+          <span class="material-symbols-outlined">logout</span>
+        </button>
+      </div>
+    </aside>
+
+    <!-- MOBILE BOTTOM NAVIGATION -->
+    <nav class="mobile-nav" id="app-mobile-nav" style="display: none;">
+      <div class="mobile-nav-item active" data-screen="home" id="mob-btn-home">
+        <span class="material-symbols-outlined mobile-nav-icon">dashboard</span>
+        Home
+      </div>
+      <div class="mobile-nav-item" data-screen="search" id="mob-btn-search">
+        <span class="material-symbols-outlined mobile-nav-icon">search</span>
+        Search
+      </div>
+      <div class="mobile-nav-item" data-screen="chat" id="mob-btn-chat">
+        <span class="material-symbols-outlined mobile-nav-icon">chat</span>
+        Chats
+      </div>
+      <div class="mobile-nav-item" data-screen="wallet" id="mob-btn-wallet">
+        <span class="material-symbols-outlined mobile-nav-icon">account_balance_wallet</span>
+        Wallet
+      </div>
+      <div class="mobile-nav-item" data-screen="profile" id="mob-btn-profile">
+        <span class="material-symbols-outlined mobile-nav-icon">person</span>
+        Profile
+      </div>
+    </nav>
+
+    <!-- MAIN INTERFACE VIEWPORT -->
+    <div class="main-content">
+
+      <!-- TOP HEADER -->
+      <header class="app-header" id="app-header" style="display: none;">
+        <div class="header-title-section">
+          <h1 id="active-screen-title">Dashboard</h1>
+        </div>
+        <div class="header-actions">
+          <!-- Role toggle to help users test Administrator functionality -->
+          <button id="btn-role-switcher" class="role-switcher-btn">Switch to Admin View</button>
+
+          <!-- Quick credits dashboard widget -->
+          <div class="credits-pill" id="header-credits-pill">
+            <span class="material-symbols-outlined" style="font-size: 1.2rem;">currency_exchange</span>
+            <span id="header-credit-amount">0</span> Credits
+          </div>
+
+          <!-- Notification Dropdown -->
+          <div class="notif-bell-container" id="header-notif-container">
+            <span class="material-symbols-outlined notif-bell">notifications</span>
+            <span class="notif-badge" id="header-notif-badge" style="display: none;">0</span>
+            
+            <!-- Quick Notification tray -->
+            <div id="header-notif-dropdown" class="card" style="display: none; position: absolute; right: 0; top: 40px; width: 320px; z-index: 100; max-height: 400px; overflow-y: auto; padding: 1rem;">
+              <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-color); padding-bottom: 0.5rem; margin-bottom: 0.5rem;">
+                <h4 style="font-size: 0.95rem;">Notifications</h4>
+                <button id="btn-mark-notif-read" style="font-size: 0.75rem; color: var(--accent-primary); font-weight: 600;">Mark all read</button>
+              </div>
+              <div id="header-notif-list">
+                <!-- Dynamically filled notifications -->
+              </div>
+              <button id="btn-view-all-notifs" class="btn btn-secondary" style="width: 100%; font-size: 0.8rem; padding: 0.5rem; margin-top: 0.5rem;">View All Notifications</button>
+            </div>
+          </div>
+          
+          <button id="btn-logout-header" class="btn btn-secondary" style="padding: 0.5rem; display: flex; align-items: center; justify-content: center; border-radius: 50%; width: 40px; height: 40px;" title="Log Out">
+            <span class="material-symbols-outlined">logout</span>
+          </button>
+        </div>
+      </header>
+
+      <!-- 1. SPLASH SCREEN / LANDING PAGE -->
+      <section id="screen-splash" class="screen-section active">
+        <div class="splash-content">
+          <div class="splash-badge">Peer-to-Peer Skill Swap</div>
+          <h1 class="splash-title">Master New Skills. Teach What You Love.</h1>
+          <p class="splash-subtitle">
+            Join a vibrant community exchanging programming, design, languages, music, and business skills. Absolutely money-free, powered by skill credits.
+          </p>
+          <div class="splash-actions">
+            <button id="btn-splash-login" class="btn btn-primary">Sign In to Your Account</button>
+            <button id="btn-splash-register" class="btn btn-secondary">Create a Free Account</button>
+          </div>
+          <div class="splash-stats">
+            <div>
+              <div class="stat-val">5,000+</div>
+              <div class="stat-lbl">Sessions Completed</div>
+            </div>
+            <div>
+              <div class="stat-val">0 Dollar</div>
+              <div class="stat-lbl">Financial Cost</div>
+            </div>
+            <div>
+              <div class="stat-val">4.9 Stars</div>
+              <div class="stat-lbl">Average Session Rating</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 2. LOGIN SCREEN -->
+      <section id="screen-login" class="screen-section">
+        <div class="auth-wrapper">
+          <div class="auth-card">
+            <div class="auth-header">
+              <h2>Welcome Back</h2>
+              <p>Log in to access your SkillSwap account</p>
+            </div>
+            <form id="form-login">
+              <div class="form-group">
+                <label for="login-email">Email Address</label>
+                <input type="email" id="login-email" class="form-control" placeholder="name@example.com" required>
+              </div>
+              <div class="form-group">
+                <label for="login-password">Password</label>
+                <input type="password" id="login-password" class="form-control" placeholder="••••••••" required>
+              </div>
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+                <label style="display: flex; align-items: center; gap: 0.5rem; font-size: 0.8rem; color: var(--text-secondary); cursor: pointer;">
+                  <input type="checkbox"> Remember me
+                </label>
+                <button type="button" id="btn-recover-pw" style="font-size: 0.8rem; color: var(--accent-primary); font-weight: 600;">Forgot Password?</button>
+              </div>
+              <button type="submit" id="btn-submit-login" class="btn btn-primary" style="width: 100%;">Log In</button>
+            </form>
+
+            <div class="oauth-divider">or continue with</div>
+
+            <button id="btn-google-login" class="google-login-btn">
+              <svg width="18" height="18" viewBox="0 0 18 18" xmlns="http://www.w3.org/2000/svg">
+                <path d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844c-.209 1.125-.843 2.078-1.796 2.717v2.258h2.908c1.702-1.567 2.684-3.874 2.684-6.615z" fill="#4285F4"/>
+                <path d="M9 18c2.43 0 4.467-.806 5.956-2.184l-2.908-2.259c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332A9 9 0 009 18z" fill="#34A853"/>
+                <path d="M3.964 10.706A5.41 5.41 0 013.682 9c0-.59.1-1.17.282-1.706V4.962H.957A9 9 0 000 9c0 1.62.43 3.137 1.19 4.457l2.774-2.201z" fill="#FBBC05"/>
+                <path d="M9 3.58c1.32 0 2.5.454 3.436 1.348l2.58-2.58C13.463.892 11.426 0 9 0A9 9 0 00.957 4.962l2.774 2.201C4.432 5.034 6.416 3.58 9 3.58z" fill="#EA4335"/>
+              </svg>
+              Sign In with Google
+            </button>
+
+            <p style="text-align: center; margin-top: 2rem; font-size: 0.85rem; color: var(--text-secondary);">
+              Don't have an account? <button id="btn-login-to-register" style="color: var(--accent-primary); font-weight: 700;">Sign Up</button>
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <!-- 3. REGISTRATION SCREEN -->
+      <section id="screen-register" class="screen-section">
+        <div class="auth-wrapper">
+          <div class="auth-card" style="max-width: 550px;">
+            <div class="auth-header">
+              <h2>Create Account</h2>
+              <p>Start learning and teaching without borders</p>
+            </div>
+            <form id="form-register">
+              <div class="grid-cols-2">
+                <div class="form-group">
+                  <label for="reg-name">Full Name</label>
+                  <input type="text" id="reg-name" class="form-control" placeholder="Alex Carter" required>
+                </div>
+                <div class="form-group">
+                  <label for="reg-email">Email Address</label>
+                  <input type="email" id="reg-email" class="form-control" placeholder="alex@example.com" required>
+                </div>
+              </div>
+
+              <div class="grid-cols-2">
+                <div class="form-group">
+                  <label for="reg-phone">Phone Number</label>
+                  <input type="tel" id="reg-phone" class="form-control" placeholder="+1 (555) 012-3456" required>
+                </div>
+                <div class="form-group">
+                  <label for="reg-country">Country</label>
+                  <select id="reg-country" class="form-control" required>
+                    <option value="">Select country...</option>
+                    <option value="Afghanistan">Afghanistan</option>
+                    <option value="Albania">Albania</option>
+                    <option value="Algeria">Algeria</option>
+                    <option value="Andorra">Andorra</option>
+                    <option value="Angola">Angola</option>
+                    <option value="Argentina">Argentina</option>
+                    <option value="Armenia">Armenia</option>
+                    <option value="Australia">Australia</option>
+                    <option value="Austria">Austria</option>
+                    <option value="Azerbaijan">Azerbaijan</option>
+                    <option value="Bahamas">Bahamas</option>
+                    <option value="Bahrain">Bahrain</option>
+                    <option value="Bangladesh">Bangladesh</option>
+                    <option value="Barbados">Barbados</option>
+                    <option value="Belarus">Belarus</option>
+                    <option value="Belgium">Belgium</option>
+                    <option value="Belize">Belize</option>
+                    <option value="Benin">Benin</option>
+                    <option value="Bhutan">Bhutan</option>
+                    <option value="Bolivia">Bolivia</option>
+                    <option value="Bosnia and Herzegovina">Bosnia and Herzegovina</option>
+                    <option value="Botswana">Botswana</option>
+                    <option value="Brazil">Brazil</option>
+                    <option value="Brunei">Brunei</option>
+                    <option value="Bulgaria">Bulgaria</option>
+                    <option value="Burkina Faso">Burkina Faso</option>
+                    <option value="Burundi">Burundi</option>
+                    <option value="Cambodia">Cambodia</option>
+                    <option value="Cameroon">Cameroon</option>
+                    <option value="Canada">Canada</option>
+                    <option value="Cape Verde">Cape Verde</option>
+                    <option value="Central African Republic">Central African Republic</option>
+                    <option value="Chad">Chad</option>
+                    <option value="Chile">Chile</option>
+                    <option value="China">China</option>
+                    <option value="Colombia">Colombia</option>
+                    <option value="Comoros">Comoros</option>
+                    <option value="Congo">Congo</option>
+                    <option value="Costa Rica">Costa Rica</option>
+                    <option value="Croatia">Croatia</option>
+                    <option value="Cuba">Cuba</option>
+                    <option value="Cyprus">Cyprus</option>
+                    <option value="Czech Republic">Czech Republic</option>
+                    <option value="Denmark">Denmark</option>
+                    <option value="Djibouti">Djibouti</option>
+                    <option value="Dominica">Dominica</option>
+                    <option value="Dominican Republic">Dominican Republic</option>
+                    <option value="East Timor">East Timor</option>
+                    <option value="Ecuador">Ecuador</option>
+                    <option value="Egypt">Egypt</option>
+                    <option value="El Salvador">El Salvador</option>
+                    <option value="Equatorial Guinea">Equatorial Guinea</option>
+                    <option value="Eritrea">Eritrea</option>
+                    <option value="Estonia">Estonia</option>
+                    <option value="Eswatini">Eswatini</option>
+                    <option value="Ethiopia">Ethiopia</option>
+                    <option value="Fiji">Fiji</option>
+                    <option value="Finland">Finland</option>
+                    <option value="France">France</option>
+                    <option value="Gabon">Gabon</option>
+                    <option value="Gambia">Gambia</option>
+                    <option value="Georgia">Georgia</option>
+                    <option value="Germany">Germany</option>
+                    <option value="Ghana">Ghana</option>
+                    <option value="Greece">Greece</option>
+                    <option value="Grenada">Grenada</option>
+                    <option value="Guatemala">Guatemala</option>
+                    <option value="Guinea">Guinea</option>
+                    <option value="Guinea-Bissau">Guinea-Bissau</option>
+                    <option value="Guyana">Guyana</option>
+                    <option value="Haiti">Haiti</option>
+                    <option value="Honduras">Honduras</option>
+                    <option value="Hungary">Hungary</option>
+                    <option value="Iceland">Iceland</option>
+                    <option value="India">India</option>
+                    <option value="Indonesia">Indonesia</option>
+                    <option value="Iran">Iran</option>
+                    <option value="Iraq">Iraq</option>
+                    <option value="Ireland">Ireland</option>
+                    <option value="Israel">Israel</option>
+                    <option value="Italy">Italy</option>
+                    <option value="Ivory Coast">Ivory Coast</option>
+                    <option value="Jamaica">Jamaica</option>
+                    <option value="Japan">Japan</option>
+                    <option value="Jordan">Jordan</option>
+                    <option value="Kazakhstan">Kazakhstan</option>
+                    <option value="Kenya">Kenya</option>
+                    <option value="Kiribati">Kiribati</option>
+                    <option value="Korea, North">Korea, North</option>
+                    <option value="Korea, South">Korea, South</option>
+                    <option value="Kuwait">Kuwait</option>
+                    <option value="Kyrgyzstan">Kyrgyzstan</option>
+                    <option value="Laos">Laos</option>
+                    <option value="Latvia">Latvia</option>
+                    <option value="Lebanon">Lebanon</option>
+                    <option value="Lesotho">Lesotho</option>
+                    <option value="Liberia">Liberia</option>
+                    <option value="Libya">Libya</option>
+                    <option value="Liechtenstein">Liechtenstein</option>
+                    <option value="Lithuania">Lithuania</option>
+                    <option value="Luxembourg">Luxembourg</option>
+                    <option value="Madagascar">Madagascar</option>
+                    <option value="Malawi">Malawi</option>
+                    <option value="Malaysia">Malaysia</option>
+                    <option value="Maldives">Maldives</option>
+                    <option value="Mali">Mali</option>
+                    <option value="Malta">Malta</option>
+                    <option value="Marshall Islands">Marshall Islands</option>
+                    <option value="Mauritania">Mauritania</option>
+                    <option value="Mauritius">Mauritius</option>
+                    <option value="Mexico">Mexico</option>
+                    <option value="Micronesia">Micronesia</option>
+                    <option value="Moldova">Moldova</option>
+                    <option value="Monaco">Monaco</option>
+                    <option value="Mongolia">Mongolia</option>
+                    <option value="Montenegro">Montenegro</option>
+                    <option value="Morocco">Morocco</option>
+                    <option value="Mozambique">Mozambique</option>
+                    <option value="Myanmar">Myanmar</option>
+                    <option value="Namibia">Namibia</option>
+                    <option value="Nauru">Nauru</option>
+                    <option value="Nepal">Nepal</option>
+                    <option value="Netherlands">Netherlands</option>
+                    <option value="New Zealand">New Zealand</option>
+                    <option value="Nicaragua">Nicaragua</option>
+                    <option value="Niger">Niger</option>
+                    <option value="Nigeria">Nigeria</option>
+                    <option value="North Macedonia">North Macedonia</option>
+                    <option value="Norway">Norway</option>
+                    <option value="Oman">Oman</option>
+                    <option value="Pakistan">Pakistan</option>
+                    <option value="Palau">Palau</option>
+                    <option value="Palestine">Palestine</option>
+                    <option value="Panama">Panama</option>
+                    <option value="Papua New Guinea">Papua New Guinea</option>
+                    <option value="Paraguay">Paraguay</option>
+                    <option value="Peru">Peru</option>
+                    <option value="Philippines">Philippines</option>
+                    <option value="Poland">Poland</option>
+                    <option value="Portugal">Portugal</option>
+                    <option value="Qatar">Qatar</option>
+                    <option value="Romania">Romania</option>
+                    <option value="Russia">Russia</option>
+                    <option value="Rwanda">Rwanda</option>
+                    <option value="Saint Kitts and Nevis">Saint Kitts and Nevis</option>
+                    <option value="Saint Lucia">Saint Lucia</option>
+                    <option value="Saint Vincent">Saint Vincent</option>
+                    <option value="Samoa">Samoa</option>
+                    <option value="San Marino">San Marino</option>
+                    <option value="Sao Tome and Principe">Sao Tome and Principe</option>
+                    <option value="Saudi Arabia">Saudi Arabia</option>
+                    <option value="Senegal">Senegal</option>
+                    <option value="Serbia">Serbia</option>
+                    <option value="Seychelles">Seychelles</option>
+                    <option value="Sierra Leone">Sierra Leone</option>
+                    <option value="Singapore">Singapore</option>
+                    <option value="Slovakia">Slovakia</option>
+                    <option value="Slovenia">Slovenia</option>
+                    <option value="Solomon Islands">Solomon Islands</option>
+                    <option value="Somalia">Somalia</option>
+                    <option value="South Africa">South Africa</option>
+                    <option value="South Sudan">South Sudan</option>
+                    <option value="Spain">Spain</option>
+                    <option value="Sri Lanka">Sri Lanka</option>
+                    <option value="Sudan">Sudan</option>
+                    <option value="Suriname">Suriname</option>
+                    <option value="Sweden">Sweden</option>
+                    <option value="Switzerland">Switzerland</option>
+                    <option value="Syria">Syria</option>
+                    <option value="Taiwan">Taiwan</option>
+                    <option value="Tajikistan">Tajikistan</option>
+                    <option value="Tanzania">Tanzania</option>
+                    <option value="Thailand">Thailand</option>
+                    <option value="Togo">Togo</option>
+                    <option value="Tonga">Tonga</option>
+                    <option value="Trinidad and Tobago">Trinidad and Tobago</option>
+                    <option value="Tunisia">Tunisia</option>
+                    <option value="Turkey">Turkey</option>
+                    <option value="Turkmenistan">Turkmenistan</option>
+                    <option value="Tuvalu">Tuvalu</option>
+                    <option value="Uganda">Uganda</option>
+                    <option value="Ukraine">Ukraine</option>
+                    <option value="United Arab Emirates">United Arab Emirates</option>
+                    <option value="United Kingdom">United Kingdom</option>
+                    <option value="United States">United States</option>
+                    <option value="Uruguay">Uruguay</option>
+                    <option value="Uzbekistan">Uzbekistan</option>
+                    <option value="Vanuatu">Vanuatu</option>
+                    <option value="Vatican City">Vatican City</option>
+                    <option value="Venezuela">Venezuela</option>
+                    <option value="Vietnam">Vietnam</option>
+                    <option value="Yemen">Yemen</option>
+                    <option value="Zambia">Zambia</option>
+                    <option value="Zimbabwe">Zimbabwe</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label for="reg-password">Password</label>
+                <input type="password" id="reg-password" class="form-control" placeholder="••••••••" required>
+              </div>
+
+              <div class="form-group">
+                <label>Profile Picture Avatar</label>
+                <div class="avatar-selector" id="reg-avatar-picker">
+                  <!-- Avatars populated by script -->
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label for="reg-bio">Short Bio (Describe your experience and interests)</label>
+                <textarea id="reg-bio" class="form-control" style="height: 80px; resize: none;" placeholder="Hi, I am passionate about learning..."></textarea>
+              </div>
+
+              <button type="submit" id="btn-submit-register" class="btn btn-primary" style="width: 100%; margin-top: 1rem;">Create Account & Claim 50 Credits</button>
+            </form>
+
+            <p style="text-align: center; margin-top: 1.5rem; font-size: 0.85rem; color: var(--text-secondary);">
+              Already have an account? <button id="btn-register-to-login" style="color: var(--accent-primary); font-weight: 700;">Log In</button>
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <!-- 4. HOME DASHBOARD -->
+      <section id="screen-home" class="screen-section">
+        <div class="dashboard-grid">
+          
+          <div class="dash-main">
+            <!-- Credits Wallet Banner -->
+            <div class="wallet-hero">
+              <h3>Available Balance</h3>
+              <div class="wallet-balance-big" id="home-wallet-amount">0 <span>Credits</span></div>
+              <div class="wallet-stats-row">
+                <div class="wallet-mini-stat">
+                  Teaching Credits Earned
+                  <span id="home-earned-credits">0</span>
+                </div>
+                <div class="wallet-mini-stat">
+                  Sessions Completed
+                  <span id="home-completed-count">0</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Upcoming / Active Booked Sessions -->
+            <div class="card">
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem;">
+                <h3 style="font-size: 1.2rem;">Your Exchange Schedule</h3>
+                <button id="btn-home-go-search" class="btn btn-secondary" style="font-size: 0.8rem; padding: 0.4rem 0.85rem;">Book New Session</button>
+              </div>
+              <div id="home-sessions-list">
+                <!-- Dynamic sessions list -->
+              </div>
+            </div>
+
+            <!-- Recommended Skills to Learn -->
+            <div>
+              <h3 style="font-size: 1.2rem; margin-bottom: 1rem;">Recommended Skills For You</h3>
+              <div class="skills-grid" id="home-skills-grid">
+                <!-- Dynamically filled with skills cards -->
+              </div>
+            </div>
+          </div>
+
+          <div class="dash-side">
+            <!-- Quick Actions Card -->
+            <div class="card" style="padding: 1.25rem;">
+              <h3 style="font-size: 1.1rem; margin-bottom: 1rem;">Quick Tools</h3>
+              <div style="display: flex; flex-direction: column; gap: 0.75rem;">
+                <button id="btn-home-add-skill" class="btn btn-primary" style="width: 100%;">
+                  <span class="material-symbols-outlined">add_circle</span> List a Skill to Teach
+                </button>
+                <button id="btn-home-view-wallet" class="btn btn-secondary" style="width: 100%; justify-content: flex-start;">
+                  <span class="material-symbols-outlined">wallet</span> Transaction Details
+                </button>
+                <button id="btn-home-view-profile" class="btn btn-secondary" style="width: 100%; justify-content: flex-start;">
+                  <span class="material-symbols-outlined">edit_square</span> Update Profile
+                </button>
+              </div>
+            </div>
+
+            <!-- Notifications Feed Widget -->
+            <div class="card" style="padding: 1.25rem;">
+              <h3 style="font-size: 1.1rem; margin-bottom: 1rem;">Recent Updates</h3>
+              <div id="home-notif-feed" style="max-height: 250px; overflow-y: auto;">
+                <!-- Dynamic updates -->
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+      <!-- 5. SEARCH SKILLS / MARKETPLACE SCREEN -->
+      <section id="screen-search" class="screen-section">
+        <h2 style="font-size: 1.75rem; margin-bottom: 0.5rem;">Explore Skill Exchange Marketplace</h2>
+        <p style="color: var(--text-secondary); margin-bottom: 2rem;">Find other users offering skills you need and exchange training sessions using your credit balance.</p>
+
+        <!-- Search Controls -->
+        <div class="search-controls">
+          <div class="search-input-wrapper">
+            <span class="material-symbols-outlined search-icon-inside">search</span>
+            <input type="text" id="search-skill-name" class="form-control" placeholder="Search by skill name, topic, or instructor...">
+          </div>
+          
+          <select id="search-category" class="filter-select">
+            <option value="">All Categories</option>
+            <option value="Graphic Design">Graphic Design</option>
+            <option value="Programming">Programming</option>
+            <option value="English">English</option>
+            <option value="Arabic">Arabic</option>
+            <option value="Video Editing">Video Editing</option>
+            <option value="Marketing">Marketing</option>
+            <option value="Photography">Photography</option>
+            <option value="Music">Music</option>
+            <option value="Business">Business</option>
+            <option value="Others">Others</option>
+          </select>
+
+          <select id="search-rating" class="filter-select">
+            <option value="">All Ratings</option>
+            <option value="4.5">4.5+ Stars</option>
+            <option value="4.0">4.0+ Stars</option>
+            <option value="3.0">3.0+ Stars</option>
+          </select>
+
+          <select id="search-experience" class="filter-select">
+            <option value="">All Levels</option>
+            <option value="Beginner">Beginner</option>
+            <option value="Intermediate">Intermediate</option>
+            <option value="Advanced">Advanced</option>
+          </select>
+        </div>
+
+        <!-- Skills Grid Container -->
+        <div class="skills-grid" id="search-skills-grid">
+          <!-- Populated dynamically -->
+        </div>
+      </section>
+
+      <!-- 6. USER PROFILE SCREEN -->
+      <section id="screen-profile" class="screen-section">
+        <div class="profile-header-card card">
+          <img src="" alt="Avatar Large" class="profile-avatar-large" id="profile-avatar">
+          <div class="profile-details">
+            <h2 id="profile-name">John Doe</h2>
+            <p id="profile-country" style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.5rem;">
+              <span class="material-symbols-outlined" style="font-size: 1.1rem; color: var(--text-muted);">flag</span> United States
+            </p>
+            <p id="profile-bio-text" style="line-height: 1.5; max-width: 600px;">
+              Senior software architect, eager to swap programming lessons for illustration skills.
+            </p>
+          </div>
+        </div>
+
+        <!-- Profile Metrics Row -->
+        <div class="profile-stats-grid">
+          <div class="card" style="text-align: center; padding: 1rem;">
+            <div class="stat-val" id="profile-stat-rating">4.8</div>
+            <div class="stat-lbl">Trust Score</div>
+          </div>
+          <div class="card" style="text-align: center; padding: 1rem;">
+            <div class="stat-val" id="profile-stat-sessions">12</div>
+            <div class="stat-lbl">Exchanges Completed</div>
+          </div>
+          <div class="card" style="text-align: center; padding: 1rem;">
+            <div class="stat-val" id="profile-stat-credits">50</div>
+            <div class="stat-lbl">Wallet Balance</div>
+          </div>
+          <div class="card" style="text-align: center; padding: 1rem;">
+            <div class="stat-val" id="profile-stat-role" style="color: var(--accent-secondary);">Standard</div>
+            <div class="stat-lbl">Profile Role</div>
+          </div>
+        </div>
+
+        <div class="grid-cols-2">
+          <!-- Skills Offered -->
+          <div class="card">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+              <h3>Skills I Can Teach</h3>
+              <button id="btn-profile-add-skill" class="btn btn-primary" style="font-size: 0.75rem; padding: 0.4rem 0.85rem;">
+                <span class="material-symbols-outlined" style="font-size: 0.95rem;">add</span> Add Skill
+              </button>
+            </div>
+            <div id="profile-skills-offered-list" style="display: flex; flex-direction: column; gap: 0.75rem;">
+              <!-- Dynamic skills listed -->
+            </div>
+          </div>
+
+          <!-- Edit Profile Info -->
+          <div class="card">
+            <h3 style="margin-bottom: 1.25rem;">Edit Profile Data</h3>
+            <form id="form-update-profile">
+              <div class="form-group">
+                <label for="edit-profile-name">Display Name</label>
+                <input type="text" id="edit-profile-name" class="form-control" required>
+              </div>
+              <div class="form-group">
+                <label for="edit-profile-phone">Phone Number (Internal Only)</label>
+                <input type="tel" id="edit-profile-phone" class="form-control" required>
+              </div>
+              <div class="form-group">
+                <label for="edit-profile-bio">Public Bio</label>
+                <textarea id="edit-profile-bio" class="form-control" style="height: 100px; resize: none;" required></textarea>
+              </div>
+              <button type="submit" class="btn btn-primary" style="width: 100%;">Save Profile Changes</button>
+            </form>
+          </div>
+        </div>
+      </section>
+
+      <!-- 7. SESSION BOOKING SCREEN -->
+      <section id="screen-booking" class="screen-section">
+        <h2 style="font-size: 1.75rem; margin-bottom: 0.5rem;" id="booking-title">Book Skill Exchange Session</h2>
+        <p style="color: var(--text-secondary); margin-bottom: 2rem;">Schedule a voice/video session. Credits will be automatically calculated and exchanged upon completion.</p>
+
+        <div class="booking-grid">
+          <!-- Step 1: Calendar Scheduling -->
+          <div class="calendar-container">
+            <h3 style="margin-bottom: 1rem;">1. Select Date</h3>
+            <div class="calendar-header">
+              <button id="btn-cal-prev" class="btn btn-secondary" style="padding: 0.35rem 0.75rem;">&lt;</button>
+              <h4 id="calendar-month-label">June 2026</h4>
+              <button id="btn-cal-next" class="btn btn-secondary" style="padding: 0.35rem 0.75rem;">&gt;</button>
+            </div>
+            
+            <div class="calendar-grid" id="booking-calendar-grid">
+              <!-- Calendar grid days injected -->
+            </div>
+
+            <h3 style="margin-top: 1.5rem; margin-bottom: 1rem;">2. Select Start Time</h3>
+            <div class="time-slots-container" id="booking-time-slots">
+              <button class="time-slot-btn" data-time="09:00">09:00 AM</button>
+              <button class="time-slot-btn" data-time="11:00">11:00 AM</button>
+              <button class="time-slot-btn" data-time="13:00">01:00 PM</button>
+              <button class="time-slot-btn" data-time="15:00">03:00 PM</button>
+              <button class="time-slot-btn" data-time="17:00">05:00 PM</button>
+              <button class="time-slot-btn" data-time="19:00">07:00 PM</button>
+            </div>
+          </div>
+
+          <!-- Step 2: Details & Cost Calculations -->
+          <div class="card">
+            <h3>3. Session Parameters</h3>
+            <div style="margin-top: 1.5rem;">
+              <div class="form-group duration-slider-container">
+                <label for="booking-duration" style="display: flex; justify-content: space-between;">
+                  <span>Session Duration</span>
+                  <span id="booking-duration-label">1.0 Hour</span>
+                </label>
+                <input type="range" id="booking-duration" min="0.5" max="4.0" step="0.5" value="1.0" class="form-control" style="padding: 0;">
+              </div>
+
+              <!-- Cost breakdown -->
+              <div class="credits-preview-box">
+                <div>
+                  <div style="font-weight: 700; font-size: 1.1rem; color: var(--accent-primary);">Credits Exchange</div>
+                  <div style="font-size: 0.8rem; color: var(--text-secondary);">10 Credits / Hour rate</div>
+                </div>
+                <div style="font-size: 1.75rem; font-weight: 800; color: var(--accent-primary);" id="booking-credits-total">10 Credits</div>
+              </div>
+
+              <!-- Verification notice -->
+              <div style="background-color: var(--bg-main); border: 1px solid var(--border-color); padding: 1rem; border-radius: var(--border-radius-md); font-size: 0.8rem; line-height: 1.5; color: var(--text-secondary); margin-bottom: 2rem;">
+                <p><strong>Note on Fairness:</strong> Credits will be held in escrow. The teacher receives credits and the student pays credits only when both mark the session completed.</p>
+              </div>
+
+              <button id="btn-confirm-booking" class="btn btn-primary" style="width: 100%;">Send Session Request</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 8. CHAT / COMMUNICATION SCREEN -->
+      <section id="screen-chat" class="screen-section">
+        <div class="chat-container">
+          <!-- Active Chats Sidebar -->
+          <div class="chat-inbox" id="chat-inbox-sidebar">
+            <div class="chat-inbox-header">
+              <h3 style="font-size: 1.1rem;">Conversations</h3>
+            </div>
+            <div class="inbox-list" id="chat-inbox-list">
+              <!-- Injected active chats -->
+            </div>
+          </div>
+
+          <!-- Chat Window -->
+          <div class="chat-window" id="chat-window-panel">
+            <div class="chat-window-header">
+              <div style="display: flex; align-items: center; gap: 0.75rem;">
+                <img src="" alt="Avatar" class="user-avatar-sm" id="chat-active-avatar">
+                <div>
+                  <h3 style="font-size: 1.05rem;" id="chat-active-name">Select a contact</h3>
+                  <p style="font-size: 0.75rem; color: var(--color-success);" id="chat-active-status">Online</p>
+                </div>
+              </div>
+              
+              <div style="display: flex; gap: 0.75rem;">
+                <button id="btn-chat-start-voice" class="btn btn-secondary" style="padding: 0.5rem;" title="Voice Call">
+                  <span class="material-symbols-outlined">call</span>
+                </button>
+                <button id="btn-chat-start-video" class="btn btn-primary" style="padding: 0.5rem;" title="Video Call">
+                  <span class="material-symbols-outlined">video_call</span>
+                </button>
+                <button id="btn-chat-report-user" class="btn btn-danger" style="padding: 0.5rem; background-color: transparent; border: 1px solid var(--border-color); color: var(--color-error);" title="Report User">
+                  <span class="material-symbols-outlined">report</span>
+                </button>
+              </div>
+            </div>
+
+            <!-- Message Log Area -->
+            <div class="chat-message-log" id="chat-message-log-view">
+              <!-- Chat bubbles -->
+            </div>
+
+            <!-- Block Warning Alert Box -->
+            <div id="chat-alert-container" style="padding: 0 1.5rem; display: none;">
+              <div class="chat-blocked-alert">
+                <span class="material-symbols-outlined">security</span>
+                <span><strong>Security Alert:</strong> Message blocked! Contact sharing (phone, WhatsApp, Telegram) is strictly prohibited.</span>
+              </div>
+            </div>
+
+            <!-- Message Input Tray -->
+            <div class="chat-input-bar">
+              <button id="btn-chat-attach" class="file-sharing-btn" title="Simulate File Attachment">
+                <span class="material-symbols-outlined">attach_file</span>
+              </button>
+              <input type="text" id="chat-message-input" placeholder="Type a message... (External links/numbers will be blocked)">
+              <button id="btn-chat-send" class="btn btn-primary" style="padding: 0.65rem 1.25rem;">
+                <span class="material-symbols-outlined">send</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 9. VIDEO CALL SCREEN -->
+      <section id="screen-call" class="screen-section">
+        <h2 style="font-size: 1.5rem; margin-bottom: 1.5rem;" id="video-call-session-title">Interactive Training Session</h2>
+        
+        <div class="video-call-grid">
+          <!-- Participant 1: Remote Video (Instructor/Student) -->
+          <div class="video-feed-box" id="video-feed-remote">
+            <div class="video-feed-placeholder" id="video-placeholder-remote">
+              <img src="" alt="Avatar" class="video-feed-avatar" id="call-remote-avatar">
+              <p id="call-remote-status">Connecting to peer video...</p>
+            </div>
+            <!-- Video tag for local sharing simulation -->
+            <div class="video-overlay-name" id="call-remote-label">Remote Peer</div>
+          </div>
+
+          <!-- Participant 2: Local Video Feed -->
+          <div class="video-feed-box local" id="video-feed-local">
+            <div class="video-feed-placeholder" id="video-placeholder-local">
+              <span class="material-symbols-outlined" style="font-size: 3rem;">videocam_off</span>
+              <p>Camera is Turned Off</p>
+            </div>
+            <!-- Dynamic local canvas or media element mockup -->
+            <div id="video-feed-local-canvas" style="display: none; width:100%; height:100%; background-color:#1e1b4b;"></div>
+            <!-- Mock screen sharing layer -->
+            <div id="video-feed-local-screenshare" class="screenshare-viewport" style="display: none;">
+              <span class="material-symbols-outlined" style="font-size: 3rem; color: var(--accent-primary);">screen_share</span>
+              <h4>Sharing your Desktop Screen</h4>
+              <div class="screenshare-mock-ui">
+                <p style="font-size: 0.75rem; color: var(--text-secondary);">Presentation.pdf (Page 3 of 12)</p>
+              </div>
+            </div>
+            <div class="video-overlay-name">You (Local Camera)</div>
+          </div>
+        </div>
+
+        <!-- Video Control Bar -->
+        <div class="video-controls">
+          <button id="btn-call-toggle-mic" class="ctrl-btn active" title="Mute/Unmute Mic">
+            <span class="material-symbols-outlined">mic</span>
+          </button>
+          <button id="btn-call-toggle-cam" class="ctrl-btn" title="Toggle Camera">
+            <span class="material-symbols-outlined">videocam</span>
+          </button>
+          <button id="btn-call-share-screen" class="ctrl-btn" title="Toggle Screen Sharing">
+            <span class="material-symbols-outlined">screen_share</span>
+          </button>
+          <button id="btn-call-hangup" class="ctrl-btn hangup" title="End Call">
+            <span class="material-symbols-outlined">call_end</span>
+          </button>
+        </div>
+      </section>
+
+      <!-- 10. CREDITS WALLET SCREEN -->
+      <section id="screen-wallet" class="screen-section">
+        <h2 style="font-size: 1.75rem; margin-bottom: 0.5rem;">Your Skill Credits Wallet</h2>
+        <p style="color: var(--text-secondary); margin-bottom: 1.5rem;">Credits are your currency to book lessons. Earn credits by teaching, or purchase credit packs and memberships below.</p>
+
+        <!-- Wallet View Tab Switcher -->
+        <div style="display: flex; gap: 1rem; margin-bottom: 1.5rem; border-bottom: 1px solid var(--border-color); padding-bottom: 0.5rem;">
+          <button id="tab-btn-wallet-overview" class="btn btn-secondary" style="border: none; padding: 0.5rem 1rem; border-radius: var(--border-radius-md); font-weight: 700; background-color: var(--bg-card); color: var(--accent-primary);">Account Balance</button>
+          <button id="tab-btn-wallet-shop" class="btn btn-secondary" style="border: none; padding: 0.5rem 1rem; border-radius: var(--border-radius-md); font-weight: 500; background: none; color: var(--text-secondary);">Buy Credits & Memberships</button>
+        </div>
+
+        <!-- TAB 1: OVERVIEW & HISTORY -->
+        <div class="wallet-grid" id="wallet-tab-overview">
+          <!-- Balance & Quick Actions -->
+          <div class="dash-side">
+            <div class="wallet-hero">
+              <h3>Available Credits</h3>
+              <div class="wallet-balance-big" id="wallet-total-amount">0 <span>Credits</span></div>
+              <p style="font-size: 0.8rem; opacity: 0.9; margin-top: 0.5rem;" id="wallet-membership-label">Tier: Standard Member</p>
+              <p style="font-size: 0.75rem; opacity: 0.8; margin-top: 0.5rem;">Every hour you teach earns you 10 credits. Every hour you learn spends 10 credits.</p>
+            </div>
+            
+            <div class="card">
+              <h3 style="font-size: 1.1rem; margin-bottom: 1rem;">Earn More Credits</h3>
+              <p style="font-size: 0.85rem; color: var(--text-secondary); line-height: 1.5; margin-bottom: 1.25rem;">
+                Don't have enough credits? List your skills on the marketplace and accept requests from other users to teach.
+              </p>
+              <button id="btn-wallet-list-skill" class="btn btn-primary" style="width: 100%;">Go List a Skill</button>
+              <button id="btn-wallet-claim-bonus" class="btn btn-secondary" style="width: 100%; margin-top: 0.5rem; color: var(--color-success); border-color: rgba(16, 185, 129, 0.3);">
+                Claim Tester Bonus (+20 Credits)
+              </button>
+            </div>
+          </div>
+
+          <!-- Transaction History Logs -->
+          <div class="transaction-list">
+            <h3 style="margin-bottom: 1.25rem;">Credit Transactions History</h3>
+            <div id="wallet-transactions-log">
+              <!-- Dynamically populated rows -->
+            </div>
+          </div>
+        </div>
+
+        <!-- TAB 2: MEMBERSHIP & CREDIT STORE -->
+        <div id="wallet-tab-shop" style="display: none; flex-direction: column; gap: 2rem;">
+          <!-- Credit Packages Row -->
+          <div>
+            <h3 style="margin-bottom: 1rem;">1. Purchase Credit Packages</h3>
+            <div class="grid-cols-3">
+              <!-- Package 1 -->
+              <div class="card" style="text-align: center; display: flex; flex-direction: column; justify-content: space-between; height: 260px;">
+                <div>
+                  <h4 style="color: var(--text-secondary); font-size: 0.85rem; text-transform: uppercase;">Starter Pack</h4>
+                  <div style="font-size: 2.25rem; font-weight: 800; color: var(--accent-primary); margin: 0.5rem 0;">20 <span style="font-size: 1rem; font-weight: normal; color: var(--text-secondary);">Credits</span></div>
+                  <p style="font-size: 0.8rem; color: var(--text-muted); line-height: 1.4;">Perfect for a quick 2-hour lesson exchange.</p>
+                </div>
+                <div>
+                  <div style="font-weight: 700; font-size: 1.15rem; margin-bottom: 0.5rem;">$4.99</div>
+                  <button class="btn btn-primary btn-buy-pack" data-amount="20" data-cost="4.99" style="width: 100%; padding: 0.5rem;">Purchase Pack</button>
+                </div>
+              </div>
+              <!-- Package 2 -->
+              <div class="card" style="text-align: center; display: flex; flex-direction: column; justify-content: space-between; height: 260px; border-color: var(--accent-primary);">
+                <div>
+                  <div style="font-size: 0.7rem; background-color: var(--accent-primary); color: white; padding: 0.15rem 0.5rem; border-radius: var(--border-radius-sm); display: inline-block; font-weight: 700; margin-bottom: 0.25rem;">MOST POPULAR</div>
+                  <h4 style="color: var(--text-secondary); font-size: 0.85rem; text-transform: uppercase;">Standard Pack</h4>
+                  <div style="font-size: 2.25rem; font-weight: 800; color: var(--accent-primary); margin: 0.5rem 0;">50 <span style="font-size: 1rem; font-weight: normal; color: var(--text-secondary);">Credits</span></div>
+                  <p style="font-size: 0.8rem; color: var(--text-muted); line-height: 1.4;">Sufficient for 5 hours of premium teaching/learning.</p>
+                </div>
+                <div>
+                  <div style="font-weight: 700; font-size: 1.15rem; margin-bottom: 0.5rem;">$9.99</div>
+                  <button class="btn btn-primary btn-buy-pack" data-amount="50" data-cost="9.99" style="width: 100%; padding: 0.5rem;">Purchase Pack</button>
+                </div>
+              </div>
+              <!-- Package 3 -->
+              <div class="card" style="text-align: center; display: flex; flex-direction: column; justify-content: space-between; height: 260px;">
+                <div>
+                  <h4 style="color: var(--text-secondary); font-size: 0.85rem; text-transform: uppercase;">Pro Swap Pack</h4>
+                  <div style="font-size: 2.25rem; font-weight: 800; color: var(--accent-primary); margin: 0.5rem 0;">120 <span style="font-size: 1rem; font-weight: normal; color: var(--text-secondary);">Credits</span></div>
+                  <p style="font-size: 0.8rem; color: var(--text-muted); line-height: 1.4;">For regular skill exchange. Save 20% on credit value.</p>
+                </div>
+                <div>
+                  <div style="font-weight: 700; font-size: 1.15rem; margin-bottom: 0.5rem;">$19.99</div>
+                  <button class="btn btn-primary btn-buy-pack" data-amount="120" data-cost="19.99" style="width: 100%; padding: 0.5rem;">Purchase Pack</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Membership Subscriptions -->
+          <div>
+            <h3 style="margin-bottom: 1rem;">2. Upgrade to Premium Membership</h3>
+            <div class="grid-cols-2">
+              <!-- Tier 1 -->
+              <div class="card" style="display: flex; flex-direction: column; justify-content: space-between; border-color: var(--accent-secondary);">
+                <div>
+                  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem;">
+                    <h4 style="font-size: 1.15rem; color: var(--accent-secondary); font-weight: 800;">Premium Monthly</h4>
+                    <span style="font-size: 1.25rem; font-weight: 800;">$9.99 <span style="font-size: 0.8rem; font-weight: normal; color: var(--text-secondary);">/ mo</span></span>
+                  </div>
+                  <ul style="font-size: 0.85rem; color: var(--text-secondary); display: flex; flex-direction: column; gap: 0.5rem; padding-left: 1.25rem; margin-bottom: 1.5rem;">
+                    <li>Claim **100 Credits** immediately upon registration</li>
+                    <li>Glowing Gold **PREMIUM** badge displayed on your profile</li>
+                    <li>Priority placement in peer skill searches</li>
+                    <li>Premium 24/7 priority customer support</li>
+                  </ul>
+                </div>
+                <button class="btn btn-primary btn-sub-premium" data-cycle="Monthly" data-price="9.99" style="width: 100%; background: linear-gradient(135deg, var(--accent-secondary), var(--accent-primary)); border: none;">Subscribe Monthly</button>
+              </div>
+
+              <!-- Tier 2 -->
+              <div class="card" style="display: flex; flex-direction: column; justify-content: space-between; border: 2px solid var(--color-warning);">
+                <div>
+                  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem;">
+                    <div style="display: flex; flex-direction: column;">
+                      <span style="font-size: 0.65rem; background-color: var(--color-warning); color: black; padding: 0.15rem 0.5rem; border-radius: var(--border-radius-sm); font-weight: 700; width: fit-content; margin-bottom: 0.25rem;">BEST VALUE (SAVE 33%)</span>
+                      <h4 style="font-size: 1.15rem; color: var(--color-warning); font-weight: 800;">Premium Yearly</h4>
+                    </div>
+                    <span style="font-size: 1.25rem; font-weight: 800;">$79.99 <span style="font-size: 0.8rem; font-weight: normal; color: var(--text-secondary);">/ yr</span></span>
+                  </div>
+                  <ul style="font-size: 0.85rem; color: var(--text-secondary); display: flex; flex-direction: column; gap: 0.5rem; padding-left: 1.25rem; margin-bottom: 1.5rem;">
+                    <li>Claim **1200 Credits** total (100 credited immediately)</li>
+                    <li>Glowing Gold **PREMIUM** badge displayed on your profile</li>
+                    <li>Priority placement in peer skill searches</li>
+                    <li>Certificate generation upon session completions</li>
+                    <li>Premium 24/7 priority customer support</li>
+                  </ul>
+                </div>
+                <button class="btn btn-primary btn-sub-premium" data-cycle="Yearly" data-price="79.99" style="width: 100%; background: linear-gradient(135deg, var(--color-warning), var(--accent-secondary)); border: none; color: black; font-weight: 800;">Subscribe Yearly</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 11. NOTIFICATIONS SCREEN -->
+      <section id="screen-notifications" class="screen-section">
+        <div class="notifications-wrapper">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+            <h2>Notifications Log</h2>
+            <button id="btn-notif-page-clear" class="btn btn-secondary" style="font-size: 0.8rem; padding: 0.4rem 0.85rem;">Mark All Read</button>
+          </div>
+          <div class="card" id="notif-page-list-container" style="padding: 0;">
+            <!-- Filled dynamically -->
+          </div>
+        </div>
+      </section>
+
+      <!-- 12. RATINGS & REVIEW SCREEN -->
+      <section id="screen-ratings" class="screen-section">
+        <div class="ratings-flow card">
+          <h2 style="margin-bottom: 0.5rem;">Rate Your Session</h2>
+          <p style="color: var(--text-secondary);" id="rating-session-desc">How was your session with John Doe?</p>
+          
+          <div class="star-rating-widget" id="star-rating-widget-btns">
+            <button data-score="1" class="material-symbols-outlined">star</button>
+            <button data-score="2" class="material-symbols-outlined">star</button>
+            <button data-score="3" class="material-symbols-outlined">star</button>
+            <button data-score="4" class="material-symbols-outlined">star</button>
+            <button data-score="5" class="material-symbols-outlined">star</button>
+          </div>
+
+          <form id="form-ratings">
+            <div class="form-group" style="text-align: left;">
+              <label for="rating-comment">Add written feedback (Optional)</label>
+              <textarea id="rating-comment" class="form-control" style="height: 120px; resize: none;" placeholder="Explain what went well, what could be improved..."></textarea>
+            </div>
+            <button type="submit" id="btn-submit-review" class="btn btn-primary" style="width: 100%;">Submit Rating & Reviews</button>
+          </form>
+        </div>
+      </section>
+
+      <!-- 13. SETTINGS SCREEN -->
+      <section id="screen-settings" class="screen-section">
+        <h2 style="font-size: 1.75rem; margin-bottom: 2rem;">Platform Settings</h2>
+
+        <div class="settings-section">
+          <h3 class="settings-section-title">Visual Configuration</h3>
+          <div class="settings-row">
+            <div>
+              <div style="font-weight: 600;">Theme Settings</div>
+              <div style="font-size: 0.85rem; color: var(--text-secondary);">Toggle light mode for daylight reading.</div>
+            </div>
+            <label class="switch-control">
+              <input type="checkbox" id="settings-toggle-theme">
+              <span class="slider-knob"></span>
+            </label>
+          </div>
+        </div>
+
+        <div class="settings-section">
+          <h3 class="settings-section-title">Notification Settings</h3>
+          <div class="settings-row">
+            <div>
+              <div style="font-weight: 600;">In-App Reminders</div>
+              <div style="font-size: 0.85rem; color: var(--text-secondary);">Receive notification pings for scheduled exchanges.</div>
+            </div>
+            <label class="switch-control">
+              <input type="checkbox" checked>
+              <span class="slider-knob"></span>
+            </label>
+          </div>
+          <div class="settings-row">
+            <div>
+              <div style="font-weight: 600;">Marketing Updates</div>
+              <div style="font-size: 0.85rem; color: var(--text-secondary);">Receive updates about new platform categories.</div>
+            </div>
+            <label class="switch-control">
+              <input type="checkbox">
+              <span class="slider-knob"></span>
+            </label>
+          </div>
+        </div>
+
+        <div class="settings-section">
+          <h3 class="settings-section-title">Privacy & Security</h3>
+          <div class="settings-row">
+            <div>
+              <div style="font-weight: 600;">Spam Defense Blocker</div>
+              <div style="font-size: 0.85rem; color: var(--text-secondary);">Prevent peer messages containing email/phone details.</div>
+            </div>
+            <label class="switch-control">
+              <input type="checkbox" checked disabled>
+              <span class="slider-knob"></span>
+            </label>
+          </div>
+          <div class="settings-row">
+            <div>
+              <div style="font-weight: 600;">Log Out</div>
+              <div style="font-size: 0.85rem; color: var(--text-secondary);">Sign out of your account on this device.</div>
+            </div>
+            <button id="btn-settings-logout" class="btn btn-secondary" style="color: var(--color-error); border-color: rgba(239, 68, 68, 0.3);">
+              Log Out
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <!-- 14. ADMINISTRATOR DASHBOARD SCREEN -->
+      <section id="screen-admin" class="screen-section">
+        <h2 style="font-size: 1.75rem; margin-bottom: 0.5rem;">Administrator Operations Console</h2>
+        <p style="color: var(--text-secondary); margin-bottom: 2rem;">Manage users, verify reports, handle disputes, and inspect platform statistics.</p>
+
+        <!-- Admin Metrics Row -->
+        <div class="admin-stats-grid">
+          <div class="card" style="padding: 1.25rem;">
+            <div class="stat-lbl" style="margin-top: 0;">Total Users</div>
+            <div class="stat-val" id="admin-stat-users" style="font-size: 2.25rem;">0</div>
+          </div>
+          <div class="card" style="padding: 1.25rem;">
+            <div class="stat-lbl" style="margin-top: 0;">Listed Skills</div>
+            <div class="stat-val" id="admin-stat-skills" style="font-size: 2.25rem;">0</div>
+          </div>
+          <div class="card" style="padding: 1.25rem;">
+            <div class="stat-lbl" style="margin-top: 0;">Total Exchanges</div>
+            <div class="stat-val" id="admin-stat-sessions" style="font-size: 2.25rem;">0</div>
+          </div>
+          <div class="card" style="padding: 1.25rem;">
+            <div class="stat-lbl" style="margin-top: 0;">Active Disputes</div>
+            <div class="stat-val" id="admin-stat-reports" style="font-size: 2.25rem; color: var(--color-warning);">0</div>
+          </div>
+        </div>
+
+        <!-- User Accounts Management Table -->
+        <div class="admin-table-container">
+          <div class="admin-table-header">Registered Platform Users</div>
+          <table class="admin-table">
+            <thead>
+              <tr>
+                <th>User Profile</th>
+                <th>Email</th>
+                <th>Rating</th>
+                <th>Credits</th>
+                <th>Sessions</th>
+                <th>Status</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="admin-users-table-rows">
+              <!-- Admin rows injected -->
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Abuse / Fraud Reports Logging -->
+        <div class="admin-table-container">
+          <div class="admin-table-header" style="color: var(--color-warning);">Reported Accounts & Disputes</div>
+          <table class="admin-table">
+            <thead>
+              <tr>
+                <th>Reporter</th>
+                <th>Reported User</th>
+                <th>Reason Category</th>
+                <th>Explanation / Details</th>
+                <th>Status</th>
+                <th>Resolution Actions</th>
+              </tr>
+            </thead>
+            <tbody id="admin-reports-table-rows">
+              <!-- Reports rows injected -->
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+    </div>
+  </div>
+
+  <!-- ================= MODALS & OVERLAYS ================= -->
+
+  <!-- MODAL: ADD SKILL -->
+  <div class="modal-overlay" id="modal-add-skill">
+    <div class="modal-content">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+        <h3>List a Skill to Teach</h3>
+        <button class="btn btn-secondary" style="border: none; padding: 0.25rem;" onclick="document.getElementById('modal-add-skill').classList.remove('active')">
+          <span class="material-symbols-outlined">close</span>
+        </button>
+      </div>
+      <form id="form-add-skill">
+        <div class="form-group">
+          <label for="skill-title-input">Skill Title</label>
+          <input type="text" id="skill-title-input" class="form-control" placeholder="e.g. Logo Design, HTML for Beginners" required>
+        </div>
+        <div class="grid-cols-2">
+          <div class="form-group">
+            <label for="skill-category-select">Category</label>
+            <select id="skill-category-select" class="form-control" required>
+              <option value="Graphic Design">Graphic Design</option>
+              <option value="Programming">Programming</option>
+              <option value="English">English</option>
+              <option value="Arabic">Arabic</option>
+              <option value="Video Editing">Video Editing</option>
+              <option value="Marketing">Marketing</option>
+              <option value="Photography">Photography</option>
+              <option value="Music">Music</option>
+              <option value="Business">Business</option>
+              <option value="Others">Others</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="skill-experience-select">Experience Level</label>
+            <select id="skill-experience-select" class="form-control" required>
+              <option value="Beginner">Beginner</option>
+              <option value="Intermediate">Intermediate</option>
+              <option value="Advanced">Advanced</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="skill-schedule-input">Availability Schedule</label>
+          <input type="text" id="skill-schedule-input" class="form-control" placeholder="e.g. Tuesdays 5pm - 8pm GMT" required>
+        </div>
+        <div class="form-group">
+          <label for="skill-description-textarea">Description</label>
+          <textarea id="skill-description-textarea" class="form-control" style="height: 100px; resize: none;" placeholder="Explain what topics you will teach and what learners should expect..." required></textarea>
+        </div>
+        <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 1rem;">Publish Skill to Marketplace</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL: SUBMIT REPORT -->
+  <div class="modal-overlay" id="modal-report-user">
+    <div class="modal-content">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+        <h3>Report User / Abuse</h3>
+        <button class="btn btn-secondary" style="border: none; padding: 0.25rem;" onclick="document.getElementById('modal-report-user').classList.remove('active')">
+          <span class="material-symbols-outlined">close</span>
+        </button>
+      </div>
+      <form id="form-report-user">
+        <div class="form-group">
+          <label for="report-category-select">Reason Category</label>
+          <select id="report-category-select" class="form-control" required>
+            <option value="abuse">Harassment or Abuse</option>
+            <option value="fraud">Fraud / Scams / External Transactions</option>
+            <option value="fake_skills">Fake Skills / Impersonation</option>
+            <option value="inappropriate">Inappropriate Behavior during Call</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="report-reason-textarea">Detail Explanation</label>
+          <textarea id="report-reason-textarea" class="form-control" style="height: 120px; resize: none;" placeholder="Provide specific details about the incident, message content, or call logs..." required></textarea>
+        </div>
+        <button type="submit" class="btn btn-danger" style="width: 100%; margin-top: 1rem;">File Formal Report</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL: CHECKOUT -->
+  <div class="modal-overlay" id="modal-checkout">
+    <div class="modal-content" style="max-width: 420px;">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+        <h3 id="checkout-modal-title">Complete Payment</h3>
+        <button class="btn btn-secondary" style="border: none; padding: 0.25rem; display: flex; align-items: center; justify-content: center; width: 32px; height: 32px; border-radius: 50%;" onclick="document.getElementById('modal-checkout').classList.remove('active')">
+          <span class="material-symbols-outlined">close</span>
+        </button>
+      </div>
+      <div id="checkout-item-details" style="background-color: var(--bg-main); padding: 1rem; border-radius: var(--border-radius-md); margin-bottom: 1.5rem;">
+        <div style="font-weight: 700; font-size: 0.95rem; color: var(--text-secondary);" id="checkout-item-name">Premium Membership</div>
+        <div style="color: var(--accent-primary); font-weight: 800; font-size: 1.5rem; margin-top: 0.25rem;" id="checkout-item-price">$9.99</div>
+      </div>
+      <form id="form-checkout">
+        <div class="form-group">
+          <label for="card-name">Cardholder Name</label>
+          <input type="text" id="card-name" class="form-control" placeholder="Alex Carter" required>
+        </div>
+        <div class="form-group">
+          <label for="card-number">Card Number</label>
+          <input type="text" id="card-number" class="form-control" placeholder="4111222233334444" pattern="\d{16}" maxlength="16" required>
+        </div>
+        <div class="grid-cols-2">
+          <div class="form-group">
+            <label for="card-expiry">Expiry Date</label>
+            <input type="text" id="card-expiry" class="form-control" placeholder="MM/YY" pattern="\d{2}/\d{2}" maxlength="5" required>
+          </div>
+          <div class="form-group">
+            <label for="card-cvv">CVV</label>
+            <input type="password" id="card-cvv" class="form-control" placeholder="123" pattern="\d{3}" maxlength="3" required>
+          </div>
+        </div>
+        
+        <!-- Processing feedback inside modal -->
+        <div id="checkout-processing" style="display: none; text-align: center; margin: 1.25rem 0 0.5rem;">
+          <div style="width: 25px; height: 25px; border: 3px solid var(--accent-primary); border-top-color: transparent; border-radius: 50%; animation: spin 1s linear infinite; margin: 0 auto 0.5rem;"></div>
+          <p style="font-size: 0.8rem; color: var(--text-secondary);">Authorizing card transaction...</p>
+        </div>
+
+        <button type="submit" id="btn-submit-payment" class="btn btn-primary" style="width: 100%; margin-top: 1.25rem;">Authorize & Pay Now</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- JavaScript module attachment -->
+  <script type="module" src="./app.js"></script>
+</body>
+</html>
