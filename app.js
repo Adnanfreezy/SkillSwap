@@ -249,6 +249,23 @@ function setupNavigation() {
   attachNavHandlers('.nav-menu .nav-item');
   attachNavHandlers('.mobile-nav .mobile-nav-item');
 
+  // Header Credits Pill Click
+  const creditsPill = document.getElementById('header-credits-pill');
+  if (creditsPill) {
+    creditsPill.addEventListener('click', () => {
+      showScreen('wallet');
+    });
+  }
+
+  // Home Dashboard Wallet Hero Click
+  const homeWalletHero = document.querySelector('#screen-home .wallet-hero');
+  if (homeWalletHero) {
+    homeWalletHero.style.cursor = 'pointer';
+    homeWalletHero.addEventListener('click', () => {
+      showScreen('wallet');
+    });
+  }
+
   // Splash Screen Buttons
   document.getElementById('btn-splash-login').addEventListener('click', () => showScreen('login'));
   document.getElementById('btn-splash-register').addEventListener('click', () => showScreen('register'));
