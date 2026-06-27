@@ -632,8 +632,12 @@
           <img src="" alt="Avatar Large" class="profile-avatar-large" id="profile-avatar">
           <div class="profile-details">
             <h2 id="profile-name">John Doe</h2>
-            <p id="profile-country" style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.5rem;">
+            <p id="profile-country" style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.35rem;">
               <span class="material-symbols-outlined" style="font-size: 1.1rem; color: var(--text-muted);">flag</span> United States
+            </p>
+            <p id="profile-portfolio" style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.5rem; font-size: 0.9rem;">
+              <span class="material-symbols-outlined" style="font-size: 1.1rem; color: var(--text-muted);">link</span>
+              <a href="#" id="profile-portfolio-link" target="_blank" style="color: var(--accent-primary); font-weight: 600;">portfolio.link</a>
             </p>
             <p id="profile-bio-text" style="line-height: 1.5; max-width: 600px;">
               Senior software architect, eager to swap programming lessons for illustration skills.
@@ -656,8 +660,8 @@
             <div class="stat-lbl">Wallet Balance</div>
           </div>
           <div class="card" style="text-align: center; padding: 1rem;">
-            <div class="stat-val" id="profile-stat-role" style="color: var(--accent-secondary);">Standard</div>
-            <div class="stat-lbl">Profile Role</div>
+            <div class="stat-val" id="profile-stat-hours" style="color: var(--accent-secondary);">0</div>
+            <div class="stat-lbl">Teaching Hours</div>
           </div>
         </div>
 
@@ -686,6 +690,10 @@
               <div class="form-group">
                 <label for="edit-profile-phone">Phone Number (Internal Only)</label>
                 <input type="tel" id="edit-profile-phone" class="form-control" required>
+              </div>
+              <div class="form-group">
+                <label for="edit-profile-portfolio">Portfolio / Website Link</label>
+                <input type="url" id="edit-profile-portfolio" class="form-control" placeholder="https://github.com/myusername" required>
               </div>
               <div class="form-group">
                 <label for="edit-profile-bio">Public Bio</label>
@@ -728,30 +736,65 @@
           </div>
 
           <!-- Step 2: Details & Cost Calculations -->
-          <div class="card">
-            <h3>3. Session Parameters</h3>
-            <div style="margin-top: 1.5rem;">
-              <div class="form-group duration-slider-container">
-                <label for="booking-duration" style="display: flex; justify-content: space-between;">
-                  <span>Session Duration</span>
-                  <span id="booking-duration-label">1.0 Hour</span>
-                </label>
-                <input type="range" id="booking-duration" min="0.5" max="4.0" step="0.5" value="1.0" class="form-control" style="padding: 0;">
-              </div>
-
-              <!-- Cost breakdown -->
-              <div class="credits-preview-box">
+          <div style="display: flex; flex-direction: column; gap: 1.5rem;">
+            <!-- Teacher Verification Matrix Card -->
+            <div class="card" id="booking-teacher-verification-card">
+              <h3 style="margin-bottom: 1rem;">Teacher Verification Matrix</h3>
+              <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 1rem;">
+                <img src="" id="booking-teacher-avatar" alt="Teacher Avatar" class="user-avatar-sm" style="width: 50px; height: 50px; border: 2px solid var(--accent-primary); border-radius: 50%;">
                 <div>
-                  <div style="font-weight: 700; font-size: 1.1rem; color: var(--accent-primary);">Credits Exchange</div>
-                  <div style="font-size: 0.8rem; color: var(--text-secondary);">10 Credits / Hour rate</div>
+                  <div style="font-weight: 700; font-size: 1.05rem;" id="booking-teacher-name">Jane Doe</div>
+                  <div style="font-size: 0.8rem; color: var(--text-secondary); display: flex; align-items: center; gap: 0.25rem;" id="booking-teacher-country">
+                    <span class="material-symbols-outlined" style="font-size: 1rem;">flag</span> United States
+                  </div>
                 </div>
-                <div style="font-size: 1.75rem; font-weight: 800; color: var(--accent-primary);" id="booking-credits-total">10 Credits</div>
               </div>
+              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; border-top: 1px solid var(--border-color); padding-top: 0.85rem; margin-bottom: 0.85rem; font-size: 0.8rem;">
+                <div>
+                  <div style="color: var(--text-muted); font-size: 0.7rem; text-transform: uppercase;">Trust Score</div>
+                  <div style="font-weight: 700; font-size: 1rem; color: var(--color-warning);" id="booking-teacher-rating">4.8 ★</div>
+                </div>
+                <div>
+                  <div style="color: var(--text-muted); font-size: 0.7rem; text-transform: uppercase;">Teaching Hours</div>
+                  <div style="font-weight: 700; font-size: 1rem;" id="booking-teacher-hours">24 Hours</div>
+                </div>
+              </div>
+              <div style="font-size: 0.8rem; border-top: 1px solid var(--border-color); padding-top: 0.85rem;">
+                <div style="color: var(--text-muted); font-size: 0.7rem; text-transform: uppercase; margin-bottom: 0.25rem;">Portfolio & Showcase</div>
+                <div id="booking-teacher-portfolio">
+                  <a href="#" target="_blank" style="color: var(--accent-primary); font-weight: 600; display: flex; align-items: center; gap: 0.25rem;">
+                    <span class="material-symbols-outlined" style="font-size: 0.95rem;">link</span>
+                    <span>portfolio.link</span>
+                  </a>
+                </div>
+              </div>
+            </div>
 
-              <!-- Verification notice -->
-              <div style="background-color: var(--bg-main); border: 1px solid var(--border-color); padding: 1rem; border-radius: var(--border-radius-md); font-size: 0.8rem; line-height: 1.5; color: var(--text-secondary); margin-bottom: 2rem;">
-                <p><strong>Note on Fairness:</strong> Credits will be held in escrow. The teacher receives credits and the student pays credits only when both mark the session completed.</p>
-              </div>
+            <!-- Session Parameters Card -->
+            <div class="card">
+              <h3>3. Session Parameters</h3>
+              <div style="margin-top: 1.5rem;">
+                <div class="form-group duration-slider-container">
+                  <label for="booking-duration" style="display: flex; justify-content: space-between;">
+                    <span>Session Duration</span>
+                    <span id="booking-duration-label">1.0 Hour</span>
+                  </label>
+                  <input type="range" id="booking-duration" min="0.5" max="4.0" step="0.5" value="1.0" class="form-control" style="padding: 0;">
+                </div>
+
+                <!-- Cost breakdown -->
+                <div class="credits-preview-box">
+                  <div>
+                    <div style="font-weight: 700; font-size: 1.1rem; color: var(--accent-primary);">Credits Exchange</div>
+                    <div style="font-size: 0.8rem; color: var(--text-secondary);">1 Credit / Hour rate</div>
+                  </div>
+                  <div style="font-size: 1.75rem; font-weight: 800; color: var(--accent-primary);" id="booking-credits-total">1.0 Credit</div>
+                </div>
+
+                <!-- Verification notice -->
+                <div style="background-color: var(--bg-main); border: 1px solid var(--border-color); padding: 1rem; border-radius: var(--border-radius-md); font-size: 0.8rem; line-height: 1.5; color: var(--text-secondary); margin-bottom: 2rem;">
+                  <p><strong>Escrow Lock System:</strong> Credits are debited from the student and held in escrow when the teacher approves the request. They are paid to the teacher only after attendance verification via IoT token and completion.</p>
+                </div>
 
               <button id="btn-confirm-booking" class="btn btn-primary" style="width: 100%;">Send Session Request</button>
             </div>
@@ -894,7 +937,7 @@
               <h3>Available Credits</h3>
               <div class="wallet-balance-big" id="wallet-total-amount">0 <span>Credits</span></div>
               <p style="font-size: 0.8rem; opacity: 0.9; margin-top: 0.5rem;" id="wallet-membership-label">Tier: Standard Member</p>
-              <p style="font-size: 0.75rem; opacity: 0.8; margin-top: 0.5rem;">Every hour you teach earns you 10 credits. Every hour you learn spends 10 credits.</p>
+              <p style="font-size: 0.75rem; opacity: 0.8; margin-top: 0.5rem;">Every hour you teach earns you 1 credit. Every hour you learn spends 1 credit.</p>
             </div>
             
             <div class="card">
@@ -904,7 +947,7 @@
               </p>
               <button id="btn-wallet-list-skill" class="btn btn-primary" style="width: 100%;">Go List a Skill</button>
               <button id="btn-wallet-claim-bonus" class="btn btn-secondary" style="width: 100%; margin-top: 0.5rem; color: var(--color-success); border-color: rgba(16, 185, 129, 0.3);">
-                Claim Tester Bonus (+20 Credits)
+                Claim Tester Bonus (+2 Credits)
               </button>
             </div>
           </div>
@@ -928,12 +971,12 @@
               <div class="card" style="text-align: center; display: flex; flex-direction: column; justify-content: space-between; height: 260px;">
                 <div>
                   <h4 style="color: var(--text-secondary); font-size: 0.85rem; text-transform: uppercase;">Starter Pack</h4>
-                  <div style="font-size: 2.25rem; font-weight: 800; color: var(--accent-primary); margin: 0.5rem 0;">20 <span style="font-size: 1rem; font-weight: normal; color: var(--text-secondary);">Credits</span></div>
+                  <div style="font-size: 2.25rem; font-weight: 800; color: var(--accent-primary); margin: 0.5rem 0;">2 <span style="font-size: 1rem; font-weight: normal; color: var(--text-secondary);">Credits</span></div>
                   <p style="font-size: 0.8rem; color: var(--text-muted); line-height: 1.4;">Perfect for a quick 2-hour lesson exchange.</p>
                 </div>
                 <div>
                   <div style="font-weight: 700; font-size: 1.15rem; margin-bottom: 0.5rem;">$4.99</div>
-                  <button class="btn btn-primary btn-buy-pack" data-amount="20" data-cost="4.99" style="width: 100%; padding: 0.5rem;">Purchase Pack</button>
+                  <button class="btn btn-primary btn-buy-pack" data-amount="2" data-cost="4.99" style="width: 100%; padding: 0.5rem;">Purchase Pack</button>
                 </div>
               </div>
               <!-- Package 2 -->
@@ -941,24 +984,24 @@
                 <div>
                   <div style="font-size: 0.7rem; background-color: var(--accent-primary); color: white; padding: 0.15rem 0.5rem; border-radius: var(--border-radius-sm); display: inline-block; font-weight: 700; margin-bottom: 0.25rem;">MOST POPULAR</div>
                   <h4 style="color: var(--text-secondary); font-size: 0.85rem; text-transform: uppercase;">Standard Pack</h4>
-                  <div style="font-size: 2.25rem; font-weight: 800; color: var(--accent-primary); margin: 0.5rem 0;">50 <span style="font-size: 1rem; font-weight: normal; color: var(--text-secondary);">Credits</span></div>
+                  <div style="font-size: 2.25rem; font-weight: 800; color: var(--accent-primary); margin: 0.5rem 0;">5 <span style="font-size: 1rem; font-weight: normal; color: var(--text-secondary);">Credits</span></div>
                   <p style="font-size: 0.8rem; color: var(--text-muted); line-height: 1.4;">Sufficient for 5 hours of premium teaching/learning.</p>
                 </div>
                 <div>
                   <div style="font-weight: 700; font-size: 1.15rem; margin-bottom: 0.5rem;">$9.99</div>
-                  <button class="btn btn-primary btn-buy-pack" data-amount="50" data-cost="9.99" style="width: 100%; padding: 0.5rem;">Purchase Pack</button>
+                  <button class="btn btn-primary btn-buy-pack" data-amount="5" data-cost="9.99" style="width: 100%; padding: 0.5rem;">Purchase Pack</button>
                 </div>
               </div>
               <!-- Package 3 -->
               <div class="card" style="text-align: center; display: flex; flex-direction: column; justify-content: space-between; height: 260px;">
                 <div>
                   <h4 style="color: var(--text-secondary); font-size: 0.85rem; text-transform: uppercase;">Pro Swap Pack</h4>
-                  <div style="font-size: 2.25rem; font-weight: 800; color: var(--accent-primary); margin: 0.5rem 0;">120 <span style="font-size: 1rem; font-weight: normal; color: var(--text-secondary);">Credits</span></div>
+                  <div style="font-size: 2.25rem; font-weight: 800; color: var(--accent-primary); margin: 0.5rem 0;">12 <span style="font-size: 1rem; font-weight: normal; color: var(--text-secondary);">Credits</span></div>
                   <p style="font-size: 0.8rem; color: var(--text-muted); line-height: 1.4;">For regular skill exchange. Save 20% on credit value.</p>
                 </div>
                 <div>
                   <div style="font-weight: 700; font-size: 1.15rem; margin-bottom: 0.5rem;">$19.99</div>
-                  <button class="btn btn-primary btn-buy-pack" data-amount="120" data-cost="19.99" style="width: 100%; padding: 0.5rem;">Purchase Pack</button>
+                  <button class="btn btn-primary btn-buy-pack" data-amount="12" data-cost="19.99" style="width: 100%; padding: 0.5rem;">Purchase Pack</button>
                 </div>
               </div>
             </div>
@@ -976,7 +1019,7 @@
                     <span style="font-size: 1.25rem; font-weight: 800;">$9.99 <span style="font-size: 0.8rem; font-weight: normal; color: var(--text-secondary);">/ mo</span></span>
                   </div>
                   <ul style="font-size: 0.85rem; color: var(--text-secondary); display: flex; flex-direction: column; gap: 0.5rem; padding-left: 1.25rem; margin-bottom: 1.5rem;">
-                    <li>Claim **100 Credits** immediately upon registration</li>
+                    <li>Claim **10 Credits** immediately upon registration</li>
                     <li>Glowing Gold **PREMIUM** badge displayed on your profile</li>
                     <li>Priority placement in peer skill searches</li>
                     <li>Premium 24/7 priority customer support</li>
@@ -996,7 +1039,7 @@
                     <span style="font-size: 1.25rem; font-weight: 800;">$79.99 <span style="font-size: 0.8rem; font-weight: normal; color: var(--text-secondary);">/ yr</span></span>
                   </div>
                   <ul style="font-size: 0.85rem; color: var(--text-secondary); display: flex; flex-direction: column; gap: 0.5rem; padding-left: 1.25rem; margin-bottom: 1.5rem;">
-                    <li>Claim **1200 Credits** total (100 credited immediately)</li>
+                    <li>Claim **120 Credits** total (10 credited immediately)</li>
                     <li>Glowing Gold **PREMIUM** badge displayed on your profile</li>
                     <li>Priority placement in peer skill searches</li>
                     <li>Certificate generation upon session completions</li>
@@ -1261,6 +1304,41 @@
           <textarea id="report-reason-textarea" class="form-control" style="height: 120px; resize: none;" placeholder="Provide specific details about the incident, message content, or call logs..." required></textarea>
         </div>
         <button type="submit" class="btn btn-danger" style="width: 100%; margin-top: 1rem;">File Formal Report</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL: IoT SMART ATTENDANCE VERIFICATION -->
+  <div class="modal-overlay" id="modal-iot-attendance">
+    <div class="modal-content" style="max-width: 420px;">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+        <h3 style="display: flex; align-items: center; gap: 0.5rem;">
+          <span class="material-symbols-outlined" style="color: var(--accent-primary);">sensors</span>
+          <span>IoT Smart Attendance Check</span>
+        </h3>
+        <button class="btn btn-secondary" style="border: none; padding: 0.25rem; display: flex; align-items: center; justify-content: center; width: 32px; height: 32px; border-radius: 50%;" onclick="document.getElementById('modal-iot-attendance').classList.remove('active')">
+          <span class="material-symbols-outlined">close</span>
+        </button>
+      </div>
+      
+      <div style="background-color: rgba(99, 102, 241, 0.05); border: 1px dashed var(--accent-primary); padding: 1.25rem; border-radius: var(--border-radius-md); margin-bottom: 1.5rem; text-align: center;">
+        <p style="font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 0.5rem;">
+          This session requires authentication via our IoT Smart Attendance device. Please enter the secure session token to verify presence.
+        </p>
+        <div style="font-family: monospace; font-size: 1.75rem; font-weight: 800; letter-spacing: 0.25em; color: var(--accent-primary); margin: 0.75rem 0;" id="iot-modal-required-token">
+          583921
+        </div>
+        <span style="font-size: 0.7rem; color: var(--text-muted);">Share this token with the student/teacher to verify your presence.</span>
+      </div>
+      
+      <form id="form-iot-verification">
+        <div class="form-group">
+          <label for="iot-input-token">Enter Secure Verification Token</label>
+          <input type="text" id="iot-input-token" class="form-control" placeholder="e.g. 583921" pattern="\d{6}" maxlength="6" required style="text-align: center; font-size: 1.25rem; letter-spacing: 0.1em; font-weight: 700;">
+        </div>
+        <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 1rem; background: linear-gradient(135deg, var(--color-success), var(--accent-primary)); border: none;">
+          Verify Attendance & Lock Escrow
+        </button>
       </form>
     </div>
   </div>

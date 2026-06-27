@@ -28,7 +28,8 @@ const DEFAULT_USERS = [
     creditBalance: 9999,
     role: 'admin',
     membership: 'Administrator',
-    status: 'active'
+    status: 'active',
+    portfolio: 'https://github.com/skillswap-admin'
   },
   {
     id: 'user_john',
@@ -43,10 +44,11 @@ const DEFAULT_USERS = [
     skillsNeeded: ['Graphic Design', 'Video Editing'],
     rating: 4.8,
     completedSessions: 14,
-    creditBalance: 80,
+    creditBalance: 8.0,
     role: 'standard',
     membership: 'Standard',
-    status: 'active'
+    status: 'active',
+    portfolio: 'https://github.com/john-codes'
   },
   {
     id: 'user_sarah',
@@ -61,10 +63,11 @@ const DEFAULT_USERS = [
     skillsNeeded: ['Spanish', 'Music'],
     rating: 4.9,
     completedSessions: 22,
-    creditBalance: 30,
+    creditBalance: 3.0,
     role: 'standard',
     membership: 'Standard',
-    status: 'active'
+    status: 'active',
+    portfolio: 'https://behance.net/sarah-designs'
   },
   {
     id: 'user_ahmed',
@@ -79,10 +82,11 @@ const DEFAULT_USERS = [
     skillsNeeded: ['Programming', 'Business'],
     rating: 4.7,
     completedSessions: 8,
-    creditBalance: 50,
+    creditBalance: 5.0,
     role: 'standard',
     membership: 'Standard',
-    status: 'active'
+    status: 'active',
+    portfolio: 'https://github.com/ahmed-writes'
   },
   {
     id: 'user_emma',
@@ -97,10 +101,11 @@ const DEFAULT_USERS = [
     skillsNeeded: ['Photography', 'French'],
     rating: 4.5,
     completedSessions: 5,
-    creditBalance: 60,
+    creditBalance: 6.0,
     role: 'standard',
     membership: 'Standard',
-    status: 'active'
+    status: 'active',
+    portfolio: 'https://youtube.com/emma-guitar'
   },
   {
     id: 'user_toxic',
@@ -115,10 +120,11 @@ const DEFAULT_USERS = [
     skillsNeeded: ['Programming'],
     rating: 2.1,
     completedSessions: 1,
-    creditBalance: 10,
+    creditBalance: 1.0,
     role: 'standard',
     membership: 'Standard',
-    status: 'active'
+    status: 'active',
+    portfolio: 'https://crypto-spam.biz'
   }
 ];
 
@@ -184,9 +190,11 @@ const DEFAULT_SESSIONS = [
     dateTime: '2026-06-20T14:00',
     duration: 2, // 2 hours
     status: 'completed',
-    creditsCost: 20,
+    creditsCost: 2.0,
     teacherRated: true,
-    studentRated: true
+    studentRated: true,
+    iotVerified: true,
+    iotToken: '112233'
   },
   {
     id: 'session_2',
@@ -196,9 +204,11 @@ const DEFAULT_SESSIONS = [
     dateTime: '2026-06-22T10:00',
     duration: 1, // 1 hour
     status: 'completed',
-    creditsCost: 10,
+    creditsCost: 1.0,
     teacherRated: true,
-    studentRated: false
+    studentRated: false,
+    iotVerified: true,
+    iotToken: '445566'
   },
   {
     id: 'session_3',
@@ -208,9 +218,11 @@ const DEFAULT_SESSIONS = [
     dateTime: '2026-06-24T16:00', // Upcoming
     duration: 1,
     status: 'accepted',
-    creditsCost: 10,
+    creditsCost: 1.0,
     teacherRated: false,
-    studentRated: false
+    studentRated: false,
+    iotVerified: false,
+    iotToken: '345678'
   },
   {
     id: 'session_4',
@@ -220,9 +232,11 @@ const DEFAULT_SESSIONS = [
     dateTime: '2026-06-25T11:00', // Pending Request
     duration: 1.5,
     status: 'pending',
-    creditsCost: 15,
+    creditsCost: 1.5,
     teacherRated: false,
-    studentRated: false
+    studentRated: false,
+    iotVerified: false,
+    iotToken: '987654'
   }
 ];
 
@@ -328,9 +342,8 @@ class MockDB {
   }
 
   init() {
-    // Check if migration reset is needed for vector avatars
-    const existingUsers = localStorage.getItem(STORAGE_KEYS.USERS);
-    if (existingUsers && existingUsers.includes('unsplash.com')) {
+    // Migration check to ensure new database structure (IoT tokens, portfolio links, 1-credit exchange rate) is loaded
+    if (!localStorage.getItem('skillswap_db_version_v2')) {
       localStorage.removeItem(STORAGE_KEYS.USERS);
       localStorage.removeItem(STORAGE_KEYS.SKILLS);
       localStorage.removeItem(STORAGE_KEYS.SESSIONS);
@@ -339,6 +352,7 @@ class MockDB {
       localStorage.removeItem(STORAGE_KEYS.REPORTS);
       localStorage.removeItem(STORAGE_KEYS.NOTIFICATIONS);
       localStorage.removeItem('skillswap_logged_in_user');
+      localStorage.setItem('skillswap_db_version_v2', 'true');
     }
 
     // Check and populate if empty
@@ -393,12 +407,13 @@ class MockDB {
       id: 'user_' + Date.now(),
       rating: 5.0,
       completedSessions: 0,
-      creditBalance: 50, // 50 starting credits for testing!
+      creditBalance: 5.0, // 5 starting credits (5 hours of learning!)
       role: 'standard',
       status: 'active',
       membership: 'Standard',
       skillsOffered: [],
       skillsNeeded: [],
+      portfolio: '',
       avatar: user.avatar || 'https://api.dicebear.com/7.x/avataaars/svg?seed=default',
       ...user
     };
@@ -478,6 +493,8 @@ class MockDB {
       status: 'pending',
       teacherRated: false,
       studentRated: false,
+      iotVerified: false,
+      iotToken: Math.floor(100000 + Math.random() * 900000).toString(), // Generate secure 6-digit token
       ...session
     };
     sessions.push(newSession);
@@ -492,6 +509,15 @@ class MockDB {
     });
 
     return newSession;
+  }
+
+  updateSession(id, data) {
+    const sessions = this.getSessions();
+    const idx = sessions.findIndex(s => s.id === id);
+    if (idx === -1) return null;
+    sessions[idx] = { ...sessions[idx], ...data };
+    this._set(STORAGE_KEYS.SESSIONS, sessions);
+    return sessions[idx];
   }
 
   updateSessionStatus(id, status) {
@@ -510,15 +536,13 @@ class MockDB {
       const student = this.getUser(session.studentId);
 
       if (teacher && student) {
-        // Deduct from student
-        this.updateUser(student.id, {
-          creditBalance: Math.max(0, student.creditBalance - credits),
-          completedSessions: student.completedSessions + 1
-        });
-        // Add to teacher
+        // Add to teacher (already deducted from student on approval)
         this.updateUser(teacher.id, {
           creditBalance: teacher.creditBalance + credits,
           completedSessions: teacher.completedSessions + 1
+        });
+        this.updateUser(student.id, {
+          completedSessions: student.completedSessions + 1
         });
 
         // Notifications
@@ -531,20 +555,78 @@ class MockDB {
           content: `You completed your session with ${student.name}. Earned ${credits} credits.`
         });
       }
-    } else if (status === 'accepted' && prevStatus === 'pending') {
-      // Notification to student
+    } 
+    // Handle credit deduction upon approval (escrow hold)
+    else if (status === 'accepted' && prevStatus === 'pending') {
+      const student = this.getUser(session.studentId);
       const teacher = this.getUser(session.teacherId);
       const skill = this.getSkill(session.skillId);
+      
+      if (student) {
+        this.updateUser(student.id, {
+          creditBalance: Math.max(0, student.creditBalance - session.creditsCost)
+        });
+      }
+
       this.createNotification(session.studentId, {
         title: 'Booking Request Approved',
         content: `${teacher.name} approved your session for "${skill.name}" on ${new Date(session.dateTime).toLocaleString()}.`
       });
-    } else if (status === 'rejected' && prevStatus === 'pending') {
+    }
+    // Handle no-show refund
+    else if (status === 'cancelled_noshow' && prevStatus === 'accepted') {
+      const student = this.getUser(session.studentId);
+      const teacher = this.getUser(session.teacherId);
+      const skill = this.getSkill(session.skillId);
+      
+      if (student) {
+        this.updateUser(student.id, {
+          creditBalance: student.creditBalance + session.creditsCost
+        });
+        this.createNotification(student.id, {
+          title: 'Session Refunded (No-Show)',
+          content: `Your session with ${teacher.name} was cancelled due to instructor no-show. ${session.creditsCost} credits have been refunded.`
+        });
+      }
+      
+      if (teacher) {
+        const newRating = Math.max(1.0, parseFloat((teacher.rating - 0.2).toFixed(1)));
+        this.updateUser(teacher.id, {
+          rating: newRating,
+          status: 'flagged' // Flag account
+        });
+        
+        this.createNotification(teacher.id, {
+          title: 'Account Flagged & Rating Reduced',
+          content: `You failed to attend your scheduled session with ${student.name}. Your rating was reduced to ${newRating} and your account has been flagged.`
+        });
+        
+        // Auto-report for Admin Console review
+        this.createReport({
+          reporterId: student.id,
+          reportedId: teacher.id,
+          category: 'no_show',
+          reason: `System Auto-Flag: Instructor failed to attend the scheduled session. Student wallet was refunded. Rating reduced to ${newRating}.`,
+          status: 'pending'
+        });
+      }
+    }
+    // Handle general decline of pending request
+    else if (status === 'rejected' && prevStatus === 'pending') {
       const teacher = this.getUser(session.teacherId);
       this.createNotification(session.studentId, {
         title: 'Booking Request Declined',
         content: `${teacher.name} declined your booking request.`
       });
+    }
+    // Handle decline after acceptance (refund student)
+    else if (status === 'rejected' && prevStatus === 'accepted') {
+      const student = this.getUser(session.studentId);
+      if (student) {
+        this.updateUser(student.id, {
+          creditBalance: student.creditBalance + session.creditsCost
+        });
+      }
     }
 
     this._set(STORAGE_KEYS.SESSIONS, sessions);
@@ -693,12 +775,12 @@ class MockDB {
 
     const updated = this.updateUser(userId, {
       membership: `Premium (${billingCycle})`,
-      creditBalance: user.creditBalance + 100 // 100 credits bonus!
+      creditBalance: user.creditBalance + 10 // 10 credits bonus!
     });
 
     this.createNotification(userId, {
       title: 'Premium Membership Active',
-      content: `Welcome to Premium! You subscribed to the ${billingCycle} membership ($${price}) and received a bonus of 100 credits.`
+      content: `Welcome to Premium! You subscribed to the ${billingCycle} membership ($${price}) and received a bonus of 10 credits.`
     });
 
     return updated;

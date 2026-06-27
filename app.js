@@ -89,6 +89,7 @@ document.addEventListener('DOMContentLoaded', () => {
   setupWalletListeners();
   setupSettingsListeners();
   setupAdminListeners();
+  setupIotListeners();
   setupGlobalClickHandlers();
   
   // Start Application
@@ -546,13 +547,45 @@ function renderDashboard() {
           actionsHTML = `<span style="font-size: 0.8rem; color: var(--text-muted);">Awaiting approval</span>`;
         }
       } else if (session.status === 'accepted') {
-        // Option to enter call, and option to complete
+        const isVerified = session.iotVerified;
+        
+        let iotStatusHTML = '';
+        let completeBtnHTML = '';
+        let noShowBtnHTML = '';
+
+        if (isVerified) {
+          iotStatusHTML = `
+            <span style="font-size: 0.725rem; color: var(--color-success); font-weight: 700; display: inline-flex; align-items: center; gap: 0.25rem; background: rgba(16, 185, 129, 0.1); padding: 4px 8px; border-radius: 6px; border: 1px solid rgba(16, 185, 129, 0.15);">
+              <span class="material-symbols-outlined" style="font-size: 0.95rem;">sensors</span> IoT Verified ✓
+            </span>
+          `;
+          completeBtnHTML = `
+            <button class="btn btn-secondary btn-complete-session" data-id="${session.id}" style="padding: 0.4rem 0.85rem; font-size: 0.75rem; border-color: var(--color-success); color: var(--color-success);">Complete</button>
+          `;
+        } else {
+          iotStatusHTML = `
+            <button class="btn btn-secondary btn-verify-iot" data-id="${session.id}" data-token="${session.iotToken}" style="padding: 0.4rem 0.85rem; font-size: 0.75rem; color: var(--color-warning); border-color: rgba(245, 158, 11, 0.3); display: inline-flex; align-items: center; gap: 0.25rem;">
+              <span class="material-symbols-outlined" style="font-size: 0.95rem;">sensors</span> Verify IoT
+            </button>
+          `;
+          completeBtnHTML = `
+            <button class="btn btn-secondary" style="padding: 0.4rem 0.85rem; font-size: 0.75rem; opacity: 0.5; cursor: not-allowed;" title="Please verify attendance via IoT Smart Attendance first" disabled>Complete</button>
+          `;
+          if (!isTeacher) {
+            noShowBtnHTML = `
+              <button class="btn btn-danger btn-report-noshow" data-id="${session.id}" style="padding: 0.4rem 0.85rem; font-size: 0.75rem; background-color: rgba(239, 68, 68, 0.15); color: var(--color-error); border: 1px solid rgba(239, 68, 68, 0.25);">No-Show</button>
+            `;
+          }
+        }
+
         actionsHTML = `
-          <div style="display: flex; gap: 0.5rem;">
-            <button class="btn btn-primary btn-join-call" data-session="${session.id}" data-partner="${partnerId}" style="padding: 0.4rem 0.85rem; font-size: 0.75rem; background: linear-gradient(135deg, var(--color-success), var(--accent-primary)); border: none;">
+          <div style="display: flex; gap: 0.5rem; flex-wrap: wrap; align-items: center; justify-content: flex-end;">
+            ${iotStatusHTML}
+            <button class="btn btn-primary btn-join-call" data-session="${session.id}" data-partner="${partnerId}" style="padding: 0.4rem 0.85rem; font-size: 0.75rem; background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary)); border: none;">
               <span class="material-symbols-outlined" style="font-size: 1rem;">video_call</span> Join Call
             </button>
-            <button class="btn btn-secondary btn-complete-session" data-id="${session.id}" style="padding: 0.4rem 0.85rem; font-size: 0.75rem;">Complete</button>
+            ${completeBtnHTML}
+            ${noShowBtnHTML}
           </div>
         `;
       } else if (session.status === 'completed') {
@@ -597,6 +630,7 @@ function renderDashboard() {
     document.querySelectorAll('.btn-accept-session').forEach(btn => {
       btn.addEventListener('click', () => {
         db.updateSessionStatus(btn.getAttribute('data-id'), 'accepted');
+        state.currentUser = db.getUser(state.currentUser.id);
         renderDashboard();
         updateHeaderPills();
       });
@@ -605,6 +639,7 @@ function renderDashboard() {
     document.querySelectorAll('.btn-decline-session').forEach(btn => {
       btn.addEventListener('click', () => {
         db.updateSessionStatus(btn.getAttribute('data-id'), 'rejected');
+        state.currentUser = db.getUser(state.currentUser.id);
         renderDashboard();
         updateHeaderPills();
       });
@@ -613,6 +648,7 @@ function renderDashboard() {
     document.querySelectorAll('.btn-complete-session').forEach(btn => {
       btn.addEventListener('click', () => {
         db.updateSessionStatus(btn.getAttribute('data-id'), 'completed');
+        state.currentUser = db.getUser(state.currentUser.id);
         renderDashboard();
         updateHeaderPills();
       });
@@ -622,7 +658,43 @@ function renderDashboard() {
       btn.addEventListener('click', () => {
         const sessionId = btn.getAttribute('data-session');
         const partnerId = btn.getAttribute('data-partner');
-        initiateVideoCall(sessionId, partnerId);
+        const session = db.getSession(sessionId);
+        
+        if (session && !session.iotVerified) {
+          state.activeIotSessionId = sessionId;
+          state.pendingJoinCallPartnerId = partnerId;
+          document.getElementById('iot-modal-required-token').textContent = session.iotToken;
+          document.getElementById('iot-input-token').value = '';
+          document.getElementById('modal-iot-attendance').classList.add('active');
+        } else {
+          initiateVideoCall(sessionId, partnerId);
+        }
+      });
+    });
+
+    document.querySelectorAll('.btn-verify-iot').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const sessionId = btn.getAttribute('data-id');
+        const token = btn.getAttribute('data-token');
+        state.activeIotSessionId = sessionId;
+        state.pendingJoinCallPartnerId = null;
+        document.getElementById('iot-modal-required-token').textContent = token;
+        document.getElementById('iot-input-token').value = '';
+        document.getElementById('modal-iot-attendance').classList.add('active');
+      });
+    });
+
+    document.querySelectorAll('.btn-report-noshow').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const sessionId = btn.getAttribute('data-id');
+        const session = db.getSession(sessionId);
+        if (confirm('Report teacher no-show? This will cancel the session, refund your credits, reduce the teacher\'s rating, and flag their account.')) {
+          db.updateSessionStatus(sessionId, 'cancelled_noshow');
+          state.currentUser = db.getUser(state.currentUser.id);
+          renderDashboard();
+          updateHeaderPills();
+          alert(`No-Show reported: ${session.creditsCost} Skill Credits have been refunded to your wallet.`);
+        }
       });
     });
 
@@ -777,9 +849,10 @@ function setupProfileListeners() {
     e.preventDefault();
     const name = document.getElementById('edit-profile-name').value.trim();
     const phone = document.getElementById('edit-profile-phone').value.trim();
+    const portfolio = document.getElementById('edit-profile-portfolio').value.trim();
     const bio = document.getElementById('edit-profile-bio').value.trim();
 
-    const updated = db.updateUser(state.currentUser.id, { name, phone, bio });
+    const updated = db.updateUser(state.currentUser.id, { name, phone, portfolio, bio });
     state.currentUser = updated;
     localStorage.setItem('skillswap_logged_in_user', JSON.stringify(updated));
     loginSession(updated);
@@ -841,11 +914,26 @@ function renderProfilePage() {
   document.getElementById('profile-stat-rating').textContent = user.rating;
   document.getElementById('profile-stat-sessions').textContent = user.completedSessions;
   document.getElementById('profile-stat-credits').textContent = user.creditBalance;
-  document.getElementById('profile-stat-role').textContent = user.role.toUpperCase();
+  
+  // Calculate total teaching hours dynamically
+  const completedTeaching = db.getSessions().filter(s => s.teacherId === user.id && s.status === 'completed');
+  const teachingHours = completedTeaching.reduce((sum, s) => sum + s.duration, 0);
+  document.getElementById('profile-stat-hours').textContent = `${teachingHours} Hours`;
+
+  // Render portfolio link
+  const linkEl = document.getElementById('profile-portfolio-link');
+  if (user.portfolio) {
+    document.getElementById('profile-portfolio').style.display = 'flex';
+    linkEl.href = user.portfolio;
+    linkEl.textContent = user.portfolio.replace(/^https?:\/\/(www\.)?/, '');
+  } else {
+    document.getElementById('profile-portfolio').style.display = 'none';
+  }
 
   // Populate Edit Fields
   document.getElementById('edit-profile-name').value = user.name;
   document.getElementById('edit-profile-phone').value = user.phone;
+  document.getElementById('edit-profile-portfolio').value = user.portfolio || '';
   document.getElementById('edit-profile-bio').value = user.bio || '';
 
   // Render My Offered Skills
@@ -917,8 +1005,8 @@ function setupBookingListeners() {
     document.getElementById('booking-duration-label').textContent = `${val.toFixed(1)} Hour${val > 1 ? 's' : ''}`;
     
     // Estimate Credits Cost
-    const totalCredits = Math.round(val * 10);
-    document.getElementById('booking-credits-total').textContent = `${totalCredits} Credits`;
+    const totalCredits = parseFloat(val.toFixed(1));
+    document.getElementById('booking-credits-total').textContent = `${totalCredits} Credit${totalCredits > 1 ? 's' : ''}`;
     
     // Check if user has enough credits
     const btnConfirm = document.getElementById('btn-confirm-booking');
@@ -945,7 +1033,7 @@ function setupBookingListeners() {
     }
 
     const duration = parseFloat(document.getElementById('booking-duration').value);
-    const creditsCost = Math.round(duration * 10);
+    const creditsCost = parseFloat(duration.toFixed(1));
 
     const skill = db.getSkill(state.bookingSkillId);
     
@@ -983,8 +1071,8 @@ function renderBookingPage() {
   slider.value = 1.0;
   document.getElementById('booking-duration-label').textContent = '1.0 Hour';
   
-  const totalCredits = 10;
-  document.getElementById('booking-credits-total').textContent = `${totalCredits} Credits`;
+  const totalCredits = 1.0;
+  document.getElementById('booking-credits-total').textContent = `${totalCredits} Credit`;
 
   const btnConfirm = document.getElementById('btn-confirm-booking');
   if (state.currentUser.creditBalance < totalCredits) {
@@ -995,6 +1083,33 @@ function renderBookingPage() {
     btnConfirm.disabled = false;
     btnConfirm.style.opacity = '1';
     btnConfirm.textContent = 'Send Session Request';
+  }
+
+  // Populate Teacher Verification details (Matrix)
+  if (teacher) {
+    document.getElementById('booking-teacher-name').textContent = teacher.name;
+    document.getElementById('booking-teacher-avatar').src = teacher.avatar;
+    document.getElementById('booking-teacher-country').innerHTML = `<span class="material-symbols-outlined" style="font-size: 1rem; vertical-align: text-bottom;">flag</span> ${teacher.country}`;
+    document.getElementById('booking-teacher-rating').textContent = `${teacher.rating.toFixed(1)} ★`;
+    
+    // Calculate total teaching hours dynamically
+    const completedTeaching = db.getSessions().filter(s => s.teacherId === teacher.id && s.status === 'completed');
+    const teachingHours = completedTeaching.reduce((sum, s) => sum + s.duration, 0);
+    document.getElementById('booking-teacher-hours').textContent = `${teachingHours} Hours`;
+    
+    // Portfolio
+    const portfolioContainer = document.getElementById('booking-teacher-portfolio');
+    if (teacher.portfolio) {
+      const displayUrl = teacher.portfolio.replace(/^https?:\/\/(www\.)?/, '');
+      portfolioContainer.innerHTML = `
+        <a href="${teacher.portfolio}" target="_blank" style="color: var(--accent-primary); font-weight: 600; display: flex; align-items: center; gap: 0.25rem;">
+          <span class="material-symbols-outlined" style="font-size: 0.95rem;">link</span>
+          <span>${displayUrl}</span>
+        </a>
+      `;
+    } else {
+      portfolioContainer.innerHTML = `<span style="color: var(--text-muted); font-size: 0.8rem; font-style: italic;">No portfolio link added.</span>`;
+    }
   }
 
   renderBookingCalendar();
@@ -1482,13 +1597,13 @@ function setupWalletListeners() {
 
   document.getElementById('btn-wallet-claim-bonus').addEventListener('click', () => {
     const updated = db.updateUser(state.currentUser.id, { 
-      creditBalance: state.currentUser.creditBalance + 20 
+      creditBalance: state.currentUser.creditBalance + 2 
     });
     
     // Create notification
     db.createNotification(state.currentUser.id, {
       title: 'Bonus Credits Claimed',
-      content: 'You claimed 20 tester bonus credits.'
+      content: 'You claimed 2 tester bonus credits.'
     });
 
     state.currentUser = updated;
@@ -1886,4 +2001,36 @@ function renderAdminDashboard() {
       renderAdminDashboard();
     });
   });
+}
+
+// --- IoT SMART ATTENDANCE VERIFICATION LISTENERS ---
+function setupIotListeners() {
+  const formIot = document.getElementById('form-iot-verification');
+  if (formIot) {
+    formIot.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const enteredToken = document.getElementById('iot-input-token').value.trim();
+      const session = db.getSession(state.activeIotSessionId);
+      
+      if (session && enteredToken === session.iotToken) {
+        db.updateSession(state.activeIotSessionId, { iotVerified: true });
+        document.getElementById('modal-iot-attendance').classList.remove('active');
+        alert('IoT Smart Attendance Verified! Attendance registered successfully. Session is now unlocked for completion.');
+        
+        const partnerId = state.pendingJoinCallPartnerId;
+        state.pendingJoinCallPartnerId = null;
+        
+        // Reload user state in case status transitions changed credits
+        state.currentUser = db.getUser(state.currentUser.id);
+        renderDashboard();
+        updateHeaderPills();
+        
+        if (partnerId) {
+          initiateVideoCall(state.activeIotSessionId, partnerId);
+        }
+      } else {
+        alert('Invalid secure token! Please make sure both parties are present and verify the code on your IoT device screen.');
+      }
+    });
+  }
 }
