@@ -108,6 +108,44 @@ const DEFAULT_USERS = [
     portfolio: 'https://youtube.com/emma-guitar'
   },
   {
+    id: 'user_raj',
+    name: 'Rajesh Kumar',
+    email: 'rajesh@example.com',
+    phone: '+919876543210',
+    password: 'password123',
+    country: 'India',
+    avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Rajesh',
+    bio: 'Third-year Computer Science student at IIT Bombay. Passionate about helping aspirants crack JEE Advanced Physics/Math and learning Cybersecurity.',
+    skillsOffered: ['IIT Prep & GATE', 'Software Engineering'],
+    skillsNeeded: ['Cybersecurity & Networks'],
+    rating: 4.9,
+    completedSessions: 6,
+    creditBalance: 6.0,
+    role: 'standard',
+    membership: 'Standard',
+    status: 'active',
+    portfolio: 'https://github.com/rajesh-iitb'
+  },
+  {
+    id: 'user_elena',
+    name: 'Elena Rostova',
+    email: 'elena@example.com',
+    phone: '+3725550109',
+    password: 'password123',
+    country: 'Estonia',
+    avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Elena',
+    bio: 'Certified Ethical Hacker (CEH) and network security specialist. Eager to teach secure coding/pentesting and learn guitar/piano.',
+    skillsOffered: ['Cybersecurity & Networks'],
+    skillsNeeded: ['Music'],
+    rating: 4.9,
+    completedSessions: 9,
+    creditBalance: 4.5,
+    role: 'standard',
+    membership: 'Standard',
+    status: 'active',
+    portfolio: 'https://elena-security.io'
+  },
+  {
     id: 'user_toxic',
     name: 'Spammy User',
     email: 'spammy@example.com',
@@ -178,6 +216,56 @@ const DEFAULT_SKILLS = [
     schedule: '24/7 Available',
     language: 'English',
     description: 'Guaranteed 1000% return on investment. Contact me at telegram @crypto_rich or whatsapp +19999999 for info.'
+  },
+  {
+    id: 'skill_6',
+    teacherId: 'user_raj',
+    name: 'JEE Advanced Physics & Crack IIT-JEE',
+    category: 'IIT Prep & GATE',
+    experienceLevel: 'Advanced',
+    schedule: 'Mondays and Fridays, 4:00 PM - 6:00 PM IST',
+    language: 'Hindi, English',
+    description: 'Master mechanics, electrodynamics, optics, and thermodynamics. We will solve past JEE Advanced problems and learn conceptual shortcut methods to crack the IIT exam.'
+  },
+  {
+    id: 'skill_7',
+    teacherId: 'user_john',
+    name: 'Fine-Tuning LLMs & Prompt Engineering',
+    category: 'LLM & AI Development',
+    experienceLevel: 'Advanced',
+    schedule: 'Flexible, nights and weekends',
+    language: 'English',
+    description: 'Learn how to fine-tune Large Language Models (LLMs) like Llama and Mistral. We will cover prompt engineering, Retrieval-Augmented Generation (RAG), and deploying model pipelines.'
+  },
+  {
+    id: 'skill_8',
+    teacherId: 'user_elena',
+    name: 'Ethical Hacking & Network Pen Testing',
+    category: 'Cybersecurity & Networks',
+    experienceLevel: 'Intermediate',
+    schedule: 'Tuesdays and Thursdays, 7:00 PM - 9:00 PM EET',
+    language: 'English, Russian',
+    description: 'Understand vulnerability assessments, penetration testing methodologies, port scanning with Nmap, exploits with Metasploit, and secure coding practices to defend networks.'
+  },
+  {
+    id: 'skill_9',
+    teacherId: 'user_john',
+    name: 'System Design, Scalability & Microservices',
+    category: 'Software Engineering',
+    experienceLevel: 'Advanced',
+    schedule: 'Saturdays, 10:00 AM - 12:00 PM GMT',
+    language: 'English',
+    description: 'Design distributed systems that scale to millions of users. Learn about load balancing, microservices, databases (SQL vs NoSQL), caching, message queues, and partition tolerance.'
+  },
+  {
+    id: 'skill_10',
+    teacherId: 'user_elena',
+    name: 'Computer Networks, TCP/IP & Wireshark Analysis',
+    category: 'Cybersecurity & Networks',
+    experienceLevel: 'Beginner',
+    schedule: 'Wednesdays, 5:00 PM - 7:00 PM EET',
+    language: 'English',
+    description: 'Deep dive into the OSI model, TCP/IP stack, DNS, DHCP, routing protocols, and how to capture and analyze network packets using Wireshark.'
   }
 ];
 
@@ -343,7 +431,7 @@ class MockDB {
 
   init() {
     // Migration check to ensure new database structure (IoT tokens, portfolio links, 1-credit exchange rate) is loaded
-    if (!localStorage.getItem('skillswap_db_version_v2')) {
+    if (!localStorage.getItem('skillswap_db_version_v3')) {
       localStorage.removeItem(STORAGE_KEYS.USERS);
       localStorage.removeItem(STORAGE_KEYS.SKILLS);
       localStorage.removeItem(STORAGE_KEYS.SESSIONS);
@@ -352,7 +440,7 @@ class MockDB {
       localStorage.removeItem(STORAGE_KEYS.REPORTS);
       localStorage.removeItem(STORAGE_KEYS.NOTIFICATIONS);
       localStorage.removeItem('skillswap_logged_in_user');
-      localStorage.setItem('skillswap_db_version_v2', 'true');
+      localStorage.setItem('skillswap_db_version_v3', 'true');
     }
 
     // Check and populate if empty
