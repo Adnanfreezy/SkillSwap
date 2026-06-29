@@ -1,0 +1,119 @@
+================================================================================
+                    SKILLSWAP - PROJECT NOVELTY & Q&A GUIDE
+================================================================================
+
+This document outlines the core novelty of the SkillSwap project and presents a 
+comprehensive list of Q&A suitable for presentations, project defense, or 
+viva-voce sessions.
+
+--------------------------------------------------------------------------------
+1. PROJECT NOVELTY & KEY INNOVATIONS
+--------------------------------------------------------------------------------
+
+SkillSwap is not just another learning portal or freelance market. Its novelty 
+lies in resolving trust, security, and financial barriers using the following 
+integrated engineering innovations:
+
+A. The "Escrow-Hold" Credit Economy (1 Hour = 1 Credit)
+   - Traditional platforms rely on expensive subscription fees or commissions. 
+     SkillSwap removes money from the equation. It operates a pure skill-token 
+     economy where 1 hour of teaching earns you 1 credit, which you spend to 
+     learn for 1 hour from someone else.
+   - To prevent fraud, credits are locked in an escrow container the moment a 
+     booking request is approved, ensuring the learner cannot double-spend 
+     credits, and releasing them to the teacher only upon successful completion.
+
+B. IoT-Mock Smart Attendance Verification
+   - A critical issue in online peer learning is attendance verification. 
+     SkillSwap integrates a mock "IoT Smart Attendance System".
+   - When a session starts, both users must verify their physical/digital 
+     presence by inputting a secure, one-time 6-digit token generated for the 
+     session. This simulates hardware/network check-ins.
+   - The platform blocks session completion and credit transfer until attendance 
+     is verified, eliminating "ghosting" or false attendance claims.
+
+C. Proactive Contact-Sharing Blocker (Safety Filter)
+   - To maintain safety and prevent users from moving transactions off-platform 
+     (bypassing security structures), the in-app chat features a real-time regex 
+     filter.
+   - It intercepts and blocks messages containing phone numbers, emails, or 
+     direct handles (WhatsApp/Telegram). If a violation is caught, a security 
+     block is triggered, protecting users from scams.
+
+D. The Peer Verification Matrix
+   - Before committing to a session, learners can inspect the teacher's profile 
+     verification metrics, containing:
+       1. Trust Score: Dynamic rating calculated from peer reviews.
+       2. Total Teaching Hours: Automatically computed from actual completed 
+          session durations.
+       3. Portfolio/Showcase Link: Clickable proof of skill competence.
+
+E. Auto-Dispute Resolution & Flagging System
+   - If a teacher fails to attend, the student can report a "No-Show" with one 
+     click. The system automatically:
+       1. Cancels the session and refunds the locked credits back to the student.
+       2. Reduces the teacher's Trust Score rating by 0.2 points.
+       3. Flags the teacher's account as "flagged".
+       4. Files a formal dispute log in the Administrator Console for review.
+
+--------------------------------------------------------------------------------
+2. QUESTIONS & ANSWERS (Q&A) FOR PRESENTATIONS / VIVAS
+--------------------------------------------------------------------------------
+
+Q1: What is the core objective of the SkillSwap platform?
+A1: The core objective is to democratize education by removing financial 
+    barriers. It enables individuals to exchange their knowledge as a form of 
+    currency (Skill Credits) in a secure, decentralized, peer-to-peer ecosystem.
+
+Q2: How does a user earn credits if they have zero balance?
+A2: New users start with a promotional balance of 5.0 credits (equivalent to 
+    5 hours of learning). Once spent, they must list their own skills in the 
+    marketplace and teach other community members to earn more credits.
+
+Q3: Why did you scale the exchange rate to 1 Hour = 1 Credit?
+A3: To make the platform highly intuitive and fair. 1 Credit corresponds 
+    directly to 1 Hour of human teaching time. It values everyone's time 
+    equally, regardless of whether they are teaching Python programming or 
+    playing acoustic guitar.
+
+Q4: What is the function of the IoT Smart Attendance Verification?
+A4: It guarantees session integrity. Because credits represent time earned or 
+    spent, we must verify that both parties actually attended. The IoT system 
+    generates a 6-digit code which must be verified to unlock the "Complete" 
+    button. It simulates an IoT hardware terminal check-in.
+
+Q5: What happens if a user tries to share their phone number in the chat?
+A5: The platform's real-time security blocker intercepts the message using 
+    regular expressions. The message is blocked, the text is deleted before 
+    transmission, and a security alert warning is shown.
+
+Q6: How does the system handle "No-Shows" or absent teachers?
+A6: The learner can click the "No-Show" button on their schedule. The system 
+    instantly returns the locked credits to the learner, subtracts 0.2 points 
+    from the teacher's trust rating, flags the teacher's account, and submits 
+    an auto-report to the Administrator Portal.
+
+Q7: What features does the Administrator Dashboard provide?
+A7: The admin panel aggregates platform metrics (total users, active listings, 
+    credits in circulation, and reported disputes). It allows administrators to 
+    suspend/unsuspend user accounts and resolve/dismiss flagged no-show reports.
+
+Q8: How is the "Total Teaching Hours" metric computed?
+A8: Instead of using static input fields, the platform calculates this 
+    dynamically. It queries the sessions database, filters for completed 
+    sessions where the user was the teacher, and sums their durations in real 
+    time.
+
+Q9: What visual design choices were made for this project?
+A9: We built a premium glassmorphic visual system with a dark AMOLED theme as 
+    default to enhance visual depth, dynamic animations, hover micro-effects, 
+    and support for real-time Light/Dark mode toggles.
+
+Q10: What is the technology stack of the prototype?
+A10: The prototype is implemented as a highly responsive Single Page Application 
+     (SPA) using HTML5, modern vanilla CSS with custom variables, and modular 
+     JavaScript. The state and tables (users, skills, sessions, messages, 
+     reviews, reports) are fully managed via a client-side mock database 
+     persisted in browser localStorage.
+
+================================================================================

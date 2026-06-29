@@ -409,7 +409,7 @@ const DEFAULT_NOTIFICATIONS = [
     id: 'notif_2',
     userId: 'user_sarah',
     title: 'Credits Received',
-    content: 'You earned 10 credits for completing "Logo Design" with John.',
+    content: 'You earned 1 credit for completing "Logo Design" with John.',
     read: true,
     timestamp: '2026-06-22T11:00:00Z'
   },
@@ -431,7 +431,7 @@ class MockDB {
 
   init() {
     // Migration check to ensure new database structure (IoT tokens, portfolio links, 1-credit exchange rate) is loaded
-    if (!localStorage.getItem('skillswap_db_version_v3')) {
+    if (!localStorage.getItem('skillswap_db_version_v4')) {
       localStorage.removeItem(STORAGE_KEYS.USERS);
       localStorage.removeItem(STORAGE_KEYS.SKILLS);
       localStorage.removeItem(STORAGE_KEYS.SESSIONS);
@@ -440,7 +440,7 @@ class MockDB {
       localStorage.removeItem(STORAGE_KEYS.REPORTS);
       localStorage.removeItem(STORAGE_KEYS.NOTIFICATIONS);
       localStorage.removeItem('skillswap_logged_in_user');
-      localStorage.setItem('skillswap_db_version_v3', 'true');
+      localStorage.setItem('skillswap_db_version_v4', 'true');
     }
 
     // Check and populate if empty

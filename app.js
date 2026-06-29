@@ -378,7 +378,7 @@ function setupAuthListeners() {
       bio
     });
 
-    alert('Registration Complete! 50 Skill Credits have been credited to your wallet.');
+    alert('Registration Complete! 5 Skill Credits have been credited to your wallet.');
     loginSession(newUser);
     showScreen('home');
   });
@@ -1776,12 +1776,16 @@ function renderWalletPage() {
   
   allNotifs.forEach(n => {
     if (n.title.includes('Bonus') || n.title.includes('Purchased') || n.title.includes('Active')) {
-      let amt = 20;
+      let amt = 2;
       let sign = 'plus';
-      if (n.content.includes('20 credits')) amt = 20;
-      else if (n.content.includes('50 credits')) amt = 50;
-      else if (n.content.includes('120 credits')) amt = 120;
-      else if (n.content.includes('Premium')) amt = 100; // Premium bonus credits
+      
+      // Attempt to parse amount dynamically from the notification content text
+      const match = n.content.match(/(\d+(?:\.\d+)?)\s*credits?/i);
+      if (match) {
+        amt = parseFloat(match[1]);
+      } else if (n.content.includes('Premium')) {
+        amt = 10;
+      }
 
       txs.push({
         date: new Date(n.timestamp),
